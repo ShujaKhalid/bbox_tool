@@ -1,0 +1,34 @@
+{
+  "name": "bbox",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "fs": "0.0.1-security",
+    "glob": "^7.1.2",
+    "json-loader": "^0.5.7",
+    "react": "^16.2.0",
+    "react-confirm-alert": "^2.0.2",
+    "react-dom": "^16.2.0",
+    "react-draggable": "^3.0.5",
+    "react-native": "^0.54.2",
+    "react-scripts": "1.1.1",
+    "webpack": "^3.11.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack-inline-manifest-plugin": "^4.0.1"
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app)."
+}

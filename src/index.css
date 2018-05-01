@@ -1,0 +1,41 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+canvas {
+    cursor:crosshair;
+    background:gray;
+}
+
+canvas:active {
+    cursor: crosshair;
+}
+
+#circle {
+  width: 8px;
+  height: 8px;
+  -webkit-border-radius: 4px;
+  background: red;
+}
+
+.react-draggable, .cursor {
+  cursor: move;
+}
+.no-cursor {
+  cursor: auto;
+}
+.cursor-y {
+  cursor: ns-resize;
+}
+.cursor-x {
+  cursor: ew-resize;
+}
+.react-draggable strong {
+  background: #ddd;
+  display: block;
+  text-align: center;
+}
+
+
