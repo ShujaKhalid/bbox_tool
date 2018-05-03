@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import axios from 'axios';
+//import 'font-awesome/css/font-awesome.css';
+import "typeface-roboto";
 import './App.css';
 import Draggable from 'react-draggable'; // Both at the same time
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -14,6 +16,7 @@ import styles from 'react-awesome-button/dist/styles.css';
 import 'react-awesome-button/dist/themes/theme-blue.css';
 import ReactTable from "react-table";
 import 'react-table/react-table.css'
+
 // import Dropdown from 'react-dropdown'
 // import 'react-dropdown/style.css'
 
@@ -52,7 +55,7 @@ class App extends Component {
 		  	action:''
 	  }
 	  inst.filename = allKeys[i]
-	  inst.status = 'pending'
+	  inst.status = 'pending...'
 	  //console.log(data)
 	  data.push(inst)
 	}
@@ -87,7 +90,7 @@ class App extends Component {
 	  currGlobalKey: 0,
 	  //console.log('Inside dispResult!')
 	  header: [
-		<tr key={0}>
+		<tr style={{fontFamily: 'Roboto', fontSize: 18+'px'}} key={0}>
 		  <th>No. </th>
 		  <th>Coord. X</th>
 		  <th>Coord. Y</th>
@@ -287,20 +290,31 @@ class App extends Component {
 	}
   };
 
-  switch = () => {
+  switch = (flag, ind) => {
 		//console.log('Inside switch!')
+
+		// Switching to another image right away
+		if (flag) {
 		// Check to see if you can move to the next image
-		if (this.state.ind+1<allFiles.length) {
 			this.setState({
-				ind: this.state.ind+1,
-				currImg: allFiles[this.state.ind+1],
-				currKey: allKeys[this.state.ind+1],
+				ind: ind,
+				currImg: allFiles[ind],
+				currKey: allKeys[ind],
 			});
-			//console.log(allFiles[this.state.ind])
-			//console.log(allKeys[this.state.ind])
-			//console.log('Next Image')      
+		// Checking to see if some conditions are met (edge cases)
 		} else {
-			window.alert('Last image reached!')
+			if (this.state.ind+1<allFiles.length) {
+				this.setState({
+					ind: this.state.ind+1,
+					currImg: allFiles[this.state.ind+1],
+					currKey: allKeys[this.state.ind+1],
+				});
+				//console.log(allFiles[this.state.ind])
+				//console.log(allKeys[this.state.ind])
+				//console.log('Next Image')      
+			} else {
+				window.alert('Last image reached!')
+			}
 		}
 
   }
@@ -333,9 +347,9 @@ class App extends Component {
   }
 
   fileMarked = () => {
-
   	var temp = this.state.data
-  	temp[this.state.ind-1].status = 'complete :)'
+
+  	temp[this.state.ind].status = 'complete :)'
 
   	this.setState({
   		data: temp
@@ -355,14 +369,14 @@ class App extends Component {
 		   config: {headers: {'Content-Type': 'json'}}
 		   }).then(response => {
 
+		   		// Mark the filename as complete!
+				this.fileMarked()
 				// Switch to the next image
-				this.switch()
+				this.switch(false, null)
 				// Refresh the bbox array
 				this.refresh()
 				// Display the result
 				this.dispResult()
-				// Mark the filename as complete!
-				this.fileMarked()
 
 				return 'allSystemsGo'
 
@@ -477,7 +491,14 @@ class App extends Component {
 	  }, {
 	    Header: 'Status',
 	    accessor: 'status',
-	    Cell: props => <span className='number'>{props.value}</span> // Custom cell components!
+	    //Cell: props => <span className='number'>{props.value}</span>,
+	    getProps: (state, rowInfo, column) => {
+				    return {
+					    style: {
+					        background: rowInfo.row.status == "pending..." ? "#EBA02B" : "#7ADD43"
+					    },
+	  			};
+	  		}
 	  }, {
 	    id: 'action', // Required because our accessor is not a string
 	    Header: 'Action',
@@ -491,10 +512,10 @@ class App extends Component {
 	  <div className="App">
 		<header className="App-header">
 		  <img src={logo} className="App-logo" alt="logo" />
-		  <h1 className="App-title">React Project</h1>
+		  <h1 className="App-title">Segmentation Tool</h1>
 		</header>
 		<p className="App-intro">
-		  To get started, draw bounding boxes on the image!
+		  Double-click on the image to begin!
 		</p>
 		<div>
 			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="596" height="334" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP}>
@@ -504,7 +525,24 @@ class App extends Component {
 			</SegTable>
 		</div>
 		<div>
-			<ReactTable data={this.state.data} columns={files} defaultPageSize={7}
+			<ReactTable className="-highlight" data={this.state.data} columns={files} defaultPageSize={allKeys.length}
+			getTdProps={(state, rowInfo, column, instance) => {
+				return {
+					onClick: (e, handleOriginal) => {
+				        console.log("It was in this row:", rowInfo.index);
+				        
+						// Switch to the next image
+						this.switch(true, rowInfo.index)
+						// Refresh the bbox array
+						this.ImgPic.refresh()
+
+				        if (handleOriginal) {
+				          handleOriginal();
+				        }
+					 }
+				  }
+			   }
+			}
 			SubComponent={row => {
 			    return (
 			      <div>
@@ -555,7 +593,7 @@ class SegTable extends Component {
 			   <td>
 				 <table width="auto" height="auto" border="1" align='center'>
 				  <thead>
-				   <th>Tool</th>
+				   <th style={{fontFamily: 'Roboto', fontSize: 18+'px'}}>Tool</th>
 				  </thead>
 				  <tbody>
 				    <tr text-align="center">
@@ -818,10 +856,21 @@ class ImgPic extends Component {
 								}
 							]
 						});
-					  } else if (resVar==='mayDay') {
+					  } else if (status==='classMiss') {
+						confirmAlert({
+							title: 'Please specify reqd. class information',
+							message: '',
+							buttons: [
+								{
+								  label: 'Go Back',
+								  onClick: () => console.log('Going back...'),
+								}
+							]
+						});
+					} else if (resVar==='mayDay') {
 						console.log('mayDay! mayDay!')
 					  }
-				  })
+				    })
 				} else if (status==='classMiss') {
 						confirmAlert({
 							title: 'Please specify reqd. class information',
@@ -969,21 +1018,31 @@ class ImgPic extends Component {
 			  <tr>
 				<td>
 				  <AwesomeButton type="primary" size="large" action={OnClick=>this.save()}>Save</AwesomeButton>
+				</td>
+				<td>
 				  <AwesomeButton type="primary" size="large" action={OnClick=>this.refresh()}>Refresh</AwesomeButton>
+				</td>
+				<td>
 				  <AwesomeButton type="primary" size="large" action={()=>this.undo()}>Undo</AwesomeButton>
 			    </td>
 			  </tr>
+		    </tbody>
+		  </table>
+		  <table align='center'>
+			<tbody>
 			  <tr>
 			    <td>
 				  <AwesomeButton type="secondary" size="large" action={()=>this.prev()}>Prev</AwesomeButton>
+				</td>
+				<td>
 				  <AwesomeButton type="secondary" size="large" action={(e) => {this.next(e)}}>Next</AwesomeButton>
 			    </td>
 		      </tr>
 		    </tbody>
 		  </table>
 		</div>
-	  <div>
-		{this.props.current}/{this.props.total}
+	  <div style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>
+		Annotating frame {this.props.current} of {this.props.total}
 	  </div>
 		<div style={{margin:'auto', width:this.props.width+'px', height:this.props.height+'px'}}>
 		  <canvas width={this.props.width} height={this.props.height} ref={(c) => {this.canvas=c}}/>
