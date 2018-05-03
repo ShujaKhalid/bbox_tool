@@ -1,5 +1,3 @@
-//367503075004133972
-//Latest
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import axios from 'axios';
@@ -7,8 +5,17 @@ import './App.css';
 import Draggable from 'react-draggable'; // Both at the same time
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
-import Dropdown from 'react-dropdown'
-import 'react-dropdown/style.css'
+import {
+  AwesomeButton,
+  AwesomeButtonProgress,
+  AwesomeButtonShare,
+} from 'react-awesome-button';
+import styles from 'react-awesome-button/dist/styles.css';
+import 'react-awesome-button/dist/themes/theme-blue.css';
+import ReactTable from "react-table";
+import 'react-table/react-table.css'
+// import Dropdown from 'react-dropdown'
+// import 'react-dropdown/style.css'
 
 // import data from './filenames.json';
 // const meme = requireAll(require.context('./img_vid1/', false, /\.jpg/));
@@ -34,6 +41,22 @@ class App extends Component {
   constructor(props) {
 	super(props)
 	//console.log(img)
+
+	// Set the initial states of the images
+	var data = []
+
+	for (let i=0; i<allKeys.length; i++) {
+	  var inst = {
+			filename: '',
+		  	status: '',
+		  	action:''
+	  }
+	  inst.filename = allKeys[i]
+	  inst.status = 'pending'
+	  //console.log(data)
+	  data.push(inst)
+	}
+
 	this.state = {
 	  lastClick: [],
 	  x: -1,
@@ -70,6 +93,7 @@ class App extends Component {
 		  <th>Coord. Y</th>
 		</tr>
 	  ],
+	  data: data,
 	}
   }
 
@@ -194,7 +218,7 @@ class App extends Component {
 	  defaultPosition: [[],[],[],[],[],[],[],[],[],[]],
 	  segClass: [[],[],[],[],[],[],[],[],[],[]],
 	})
-  };
+};
 
   undo = () => {
 	if (this.state.lastClick[this.state.lastClick.length-1]==='rec') {
@@ -239,12 +263,6 @@ class App extends Component {
 	}
 
 	this.dispResult()
-	//console.log(this.state.lastClick)
-	//console.log(this.state.defaultPosition)
-	//console.log(this.state.resCoords)
-	//console.log(this.state.maskP)
-	//console.log(this.state.maskInd)
-	//console.log('Undoneing has been done!')
   };
 
   next = () => {
@@ -297,7 +315,7 @@ class App extends Component {
 
 				// Must have atleast globalKey+1 non-null 
 				// values in the array 
-				if (valClass.length===0) {
+				if (valClass.length==0) {
 					return 'classMiss';
 				};
 			};
@@ -314,6 +332,17 @@ class App extends Component {
 		return 'keepMoving'
   }
 
+  fileMarked = () => {
+
+  	var temp = this.state.data
+  	temp[this.state.ind-1].status = 'complete :)'
+
+  	this.setState({
+  		data: temp
+  	})
+
+  }
+
   // Save the results to the server
   save = () => {
 	  const data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
@@ -323,7 +352,7 @@ class App extends Component {
 	  return axios({method: 'post',
 		   url: 'http://localhost:3001/send',
 		   data: data,
-		   config: {headers: {'Content-Type': 'json' }}
+		   config: {headers: {'Content-Type': 'json'}}
 		   }).then(response => {
 
 				// Switch to the next image
@@ -332,6 +361,8 @@ class App extends Component {
 				this.refresh()
 				// Display the result
 				this.dispResult()
+				// Mark the filename as complete!
+				this.fileMarked()
 
 				return 'allSystemsGo'
 
@@ -439,6 +470,23 @@ class App extends Component {
   }
 
   render() {
+
+	  const files = [{
+	    Header: 'Filename',
+	    accessor: 'filename' // String-based value accessors!
+	  }, {
+	    Header: 'Status',
+	    accessor: 'status',
+	    Cell: props => <span className='number'>{props.value}</span> // Custom cell components!
+	  }, {
+	    id: 'action', // Required because our accessor is not a string
+	    Header: 'Action',
+	    accessor: d => d.action // Add link to image here to toggle to it
+	  }, {
+	    Header: props => <span>Delete</span>, // Custom header components!
+	    accessor: 'filename.delete'
+	  }]
+
 	return (
 	  <div className="App">
 		<header className="App-header">
@@ -448,11 +496,33 @@ class App extends Component {
 		<p className="App-intro">
 		  To get started, draw bounding boxes on the image!
 		</p>
-		<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="596" height="334" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP}>
-		  {this.state.children}
-		</ImgPic>
-		<SegTable resCoords={this.state.resCoords} resClass={this.state.resClass} header={this.state.header}>
-		</SegTable>
+		<div>
+			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="596" height="334" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP}>
+			  {this.state.children}
+			</ImgPic>
+			<SegTable resCoords={this.state.resCoords} resClass={this.state.resClass} header={this.state.header}>
+			</SegTable>
+		</div>
+		<div>
+			<ReactTable data={this.state.data} columns={files} defaultPageSize={7}
+			SubComponent={row => {
+			    return (
+			      <div>
+			        Functionality being developed!
+			      </div>
+			    );
+			  }}	
+				getProps={(state, rowInfo, column) => {
+					console.log(rowInfo)
+					console.log(this.state.ind)
+					console.log(column)
+				    return {
+				      style: {
+				        //background: rowInfo > 20 ? "green" : "red"
+				    }
+				};
+  			}}/>
+		</div>
 	  </div>
 	);
   }
@@ -605,7 +675,6 @@ class ImgPic extends Component {
   }
 
   updateCanvas = () => {
-
 	if (this.isDragRect || this.isDragPoly) {
 	  requestAnimationFrame(this.updateCanvas)
 	}
@@ -617,7 +686,6 @@ class ImgPic extends Component {
 	this.ctx.clearRect(0, 0, this.props.width, this.props.height)
 	this.base_image = new Image()
 	this.base_image.src = this.props.frame
-
 	// Draw the base image
 	this.ctx.drawImage(this.base_image,0,0)
 	
@@ -646,7 +714,7 @@ class ImgPic extends Component {
 	}
 
 	if (this.isDragPoly || this.isDragRect) {
-	  //console.log('Inside update canvas!') 
+	  console.log('Inside update canvas!') 
 	  //console.log(this.props.polyP)
 	  for (let j=0; j<this.props.polyP.length; j++) {
 		  this.ctx.beginPath();
@@ -729,27 +797,16 @@ class ImgPic extends Component {
 		  label: 'Yes',
 		  onClick: () => {
    			  var status = this.props.checks()
-   			  console.log(status)
+   			  console.log('status: '+status)
    			  if (status=='keepMoving') {
 				  this.props.next()
 				  .then((resVar) => {
 					  if (resVar==='allSystemsGo') {
 						// Refresh the bbox array
-						//this.props.refresh()
+						// this.props.refresh()
 						// Update the canvas
 						this.isDirty = true
 						requestAnimationFrame(this.reviveCanvas) 	
-					  } else if (resVar==='classMiss') {
-						confirmAlert({
-							title: 'Please specify reqd. class information',
-							message: '',
-							buttons: [
-								{
-								  label: 'Go Back',
-								  onClick: () => console.log('Going back...'),
-								}
-							]
-						});
 					  } else if (resVar==='bboxMiss') {
 						confirmAlert({
 							title: 'Please specify correct no. of bounding boxes',
@@ -765,7 +822,18 @@ class ImgPic extends Component {
 						console.log('mayDay! mayDay!')
 					  }
 				  })
-				};
+				} else if (status==='classMiss') {
+						confirmAlert({
+							title: 'Please specify reqd. class information',
+							message: '',
+							buttons: [
+								{
+								  label: 'Go Back',
+								  onClick: () => console.log('Going back...'),
+								}
+							]
+						});
+					};
 		    }
 		},
 		{
@@ -782,7 +850,9 @@ class ImgPic extends Component {
 	this.props.refresh()
 	// Update the canvas
 	this.isDirty = true
-	requestAnimationFrame(this.updateCanvas) 
+	this.isDragPoly = true
+	this.reviveCanvas()
+	//requestAnimationFrame(this.updateCanvas) 
   };
 
   undo = () => {
@@ -792,7 +862,9 @@ class ImgPic extends Component {
 	// Update the canvas
 	this.isDirty = true
 	this.isDragPoly = true
-	requestAnimationFrame(this.updateCanvas) 
+	//this.reviveCanvas()
+	this.updateCanvas()
+	//requestAnimationFrame(this.updateCanvas) 
   };
 
   onKeyDown = (e) => {
@@ -895,21 +967,21 @@ class ImgPic extends Component {
 		  <table align='center'>
 			<tbody>
 			  <tr>
-				  <td>
-					<button onClick={this.save}>Save</button>
-					<button onClick={this.refresh}>Refresh</button>
-				<button onClick={this.undo}>Undo</button>
-			  </td>
-			</tr>
-			<tr>
-			  <td>
-				<button onClick={this.prev}>Prev</button>
-				<button onClick={(e) => {this.next(e)}}>Next</button>
-				  </td>
-				</tr>
-			  </tbody>
-			</table>
-		  </div>
+				<td>
+				  <AwesomeButton type="primary" size="large" action={OnClick=>this.save()}>Save</AwesomeButton>
+				  <AwesomeButton type="primary" size="large" action={OnClick=>this.refresh()}>Refresh</AwesomeButton>
+				  <AwesomeButton type="primary" size="large" action={()=>this.undo()}>Undo</AwesomeButton>
+			    </td>
+			  </tr>
+			  <tr>
+			    <td>
+				  <AwesomeButton type="secondary" size="large" action={()=>this.prev()}>Prev</AwesomeButton>
+				  <AwesomeButton type="secondary" size="large" action={(e) => {this.next(e)}}>Next</AwesomeButton>
+			    </td>
+		      </tr>
+		    </tbody>
+		  </table>
+		</div>
 	  <div>
 		{this.props.current}/{this.props.total}
 	  </div>

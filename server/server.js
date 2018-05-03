@@ -17,42 +17,42 @@ app.use(function(req, res, next) {
   next();
 });
 
-async function ls() {
-  const { stdout, stderr } = await exec('ls -lrt');
-  console.log('stdout:', stdout);
-  console.log('stderr:', stderr);
-}
+// async function ls() {
+//   const { stdout, stderr } = await exec('ls -lrt');
+//   console.log('stdout:', stdout);
+//   console.log('stderr:', stderr);
+// }
 
-async function rm() {
-  console.log('Removing old folder!')
-  const { stdout, stderr } = await exec('rm -rf ./../../polyrnn/test/*');
-  console.log('stdout:', stdout);
-  console.log('stderr:', stderr);
-}
+// async function rm() {
+//   console.log('Removing old folder!')
+//   const { stdout, stderr } = await exec('rm -rf ./../../polyrnn/test/*');
+//   console.log('stdout:', stdout);
+//   console.log('stderr:', stderr);
+// }
 
-async function mkdir() {
-  console.log('Creating new folder!')
-  const { stdout, stderr } = await exec('mkdir .\\..\\..\\polyrnn\\test');
-  console.log('stdout:', stdout);
-  console.log('stderr:', stderr);
-}
+// async function mkdir() {
+//   console.log('Creating new folder!')
+//   const { stdout, stderr } = await exec('mkdir .\\..\\..\\polyrnn\\test');
+//   console.log('stdout:', stdout);
+//   console.log('stderr:', stderr);
+// }
 
-async function copyFile(filename) {
-  file_path = './../src/img_vid1/'+ filename
-  new_path = './../../polyrnn/test/'+filename	
-  console.log('Copying File!')
-  //const { stdout, stderr } = await exec('echo '+ file_path);
-  const { stdout, stderr } = await exec('cp -p '+ file_path + ' ' + new_path);
-  //console.log('stdout:', stdout);
-  //console.log('stderr:', stderr);
-}
+// async function copyFile(filename) {
+//   file_path = './../src/img_vid1/'+ filename
+//   new_path = './../../polyrnn/test/'+filename	
+//   console.log('Copying File!')
+//   //const { stdout, stderr } = await exec('echo '+ file_path);
+//   const { stdout, stderr } = await exec('cp -p '+ file_path + ' ' + new_path);
+//   //console.log('stdout:', stdout);
+//   //console.log('stderr:', stderr);
+// }
 
-async function runInference() {
-  console.log('Running Inference!')
-  const { stdout, stderr } = await exec('bash ./../../polyrnn/src/demo_inference.sh');
-  console.log('stdout:', stdout);
-  console.log('stderr:', stderr);
-}
+// async function runInference() {
+//   console.log('Running Inference!')
+//   const { stdout, stderr } = await exec('bash ./../../polyrnn/src/demo_inference.sh');
+//   console.log('stdout:', stdout);
+//   console.log('stderr:', stderr);
+// }
 
 app.post('/send', function(req,res) {
 	console.log(__dirname+'/log.json')
@@ -79,16 +79,16 @@ app.post('/send', function(req,res) {
 	// });
 
 	// Delete previous test directory contents
-	rm()
+	//rm()
 
 	// Recreate new directory
 	//mkdir()
 
 	// Copy the image data to the required folder
-	copyFile(data.pic);
+	//copyFile(data.pic);
 
 	// Run the model on the file in the test folder
-	runInference();
+	//runInference();
 
 	console.log(text)
 	wstream.write(JSON.stringify(text)); 

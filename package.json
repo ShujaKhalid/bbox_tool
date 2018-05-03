@@ -9,13 +9,17 @@
     "fs": "0.0.1-security",
     "glob": "^7.1.2",
     "json-loader": "^0.5.7",
+    "muicss": "^0.9.39",
     "react": "^16.2.0",
+    "react-awesome-button": "^4.2.0",
     "react-confirm-alert": "^2.0.2",
     "react-dom": "^16.2.0",
     "react-draggable": "^3.0.5",
     "react-dropdown": "^1.4.2",
     "react-native": "^0.54.2",
+    "react-native-awesome-button": "^1.8.2",
     "react-scripts": "1.1.1",
+    "react-table": "^6.8.2",
     "webpack": "^3.11.0"
   },
   "scripts": {
