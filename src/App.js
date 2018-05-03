@@ -7,7 +7,8 @@ import './App.css';
 import Draggable from 'react-draggable'; // Both at the same time
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
-
+import Dropdown from 'react-dropdown'
+import 'react-dropdown/style.css'
 
 // import data from './filenames.json';
 // const meme = requireAll(require.context('./img_vid1/', false, /\.jpg/));
@@ -372,12 +373,24 @@ class App extends Component {
   dispResult = () => {
 	var resCoords = []
 	var resClass = []
+	var clr = ""
  	//console.log(this.state.globalKey)
  	//console.log(this.state.defaultPosition)
 	for (var j=0; j<=this.state.globalKey; j+=1) {
+		
+		if (j==0) {
+			clr="#85C1E9"
+		} else if (j==1) {
+			clr="#99A3A4"
+		} else if (j==2) {
+			clr="#A569BD"
+		} else if (j==3) {
+			clr="##F1948A"
+		}
+
 		for (var i=0; i<this.state.defaultPosition[j].length; i+=1) {
 			resCoords.push(
-			<tr key={j*(this.state.defaultPosition[j].length-1)+i}>
+			<tr bgcolor={clr} key={j*(this.state.defaultPosition[j].length-1)+i}>
 			  <td>{j+1}</td>
 			  <td>{this.state.defaultPosition[j][i].x}</td>
 			  <td>{this.state.defaultPosition[j][i].y}</td>
@@ -385,9 +398,10 @@ class App extends Component {
 		)};
 	
 		if (this.state.defaultPosition[j].length>0) {
+			var hgt = (16+(19)*this.state.defaultPosition[j].length).toString() + "px" // very crude approximation 
 			resClass.push(
-			  <tr>	
-				<select className={j} onChange={this.classify}>
+			  <tr bgcolor={clr} height={hgt}>	
+				<select background="rgba(0,0,0,0.3)" className={j} onChange={this.classify}>
 				  <option value="0"> - </option>
 				  <option value="1"> Grasper </option>
 				  <option value="2"> Bipolar </option>
@@ -448,6 +462,12 @@ class App extends Component {
 class SegTable extends Component {
 
 	render() {
+	  	const options = [
+	  	'one', 'two', 'three'
+		]
+
+		const defaultOption = options[0]
+
 		//console.log('Inside Segtable')
 		return (
 			<div className="SegTable">
@@ -462,13 +482,15 @@ class SegTable extends Component {
 				  </tbody>
 				</table>
 			   </td>
-			   <td position="relative">
+			   <td>
 				 <table width="auto" height="auto" border="1" align='center'>
 				  <thead>
 				   <th>Tool</th>
 				  </thead>
 				  <tbody>
-					 {this.props.resClass}
+				    <tr text-align="center">
+					  {this.props.resClass}
+					</tr>
 				  </tbody>
 				 </table>
 			   </td>
@@ -638,8 +660,21 @@ class ImgPic extends Component {
 		  if (this.props.polyP[j][0]!==undefined) {
 			this.ctx.lineTo(this.props.polyP[j][0].x, this.props.polyP[j][0].y)
 		  }
-		  this.ctx.fillStyle = "rgba(255,255,255,0.2)";
-		  this.ctx.strokeStyle = "rgb(0,200,0)";
+		  
+		  if (j==0) {
+			this.ctx.strokeStyle = "#85C1E9";
+			this.ctx.fillStyle = "rgba(133,193,233,0.5)";
+		  } else if (j==1) {
+			this.ctx.strokeStyle = "#99A3A4";
+			this.ctx.fillStyle = "rgba(153,163,164,0.5)";
+		  } else if (j==2) {
+			this.ctx.strokeStyle = "#A569BD";
+			this.ctx.fillStyle = "rgba(187,143,206,0.5)";
+		  } else if (j==3) {
+			this.ctx.strokeStyle = "##F1948A";
+			this.ctx.fillStyle = "rgba(22,160,133,0.5)";
+	      }
+
 		  this.ctx.stroke();
 		  this.ctx.fill()
 		  this.ctx.closePath()
