@@ -91,9 +91,9 @@ class App extends Component {
 	  //console.log('Inside dispResult!')
 	  header: [
 		<tr style={{fontFamily: 'Roboto', fontSize: 18+'px'}} key={0}>
-		  <th>No. </th>
-		  <th>Coord. X</th>
-		  <th>Coord. Y</th>
+		  <th style={{width: "150px"}}>No. </th>
+		  <th style={{width: "150px"}}>X</th>
+		  <th style={{width: "150px"}}>Y</th>
 		</tr>
 	  ],
 	  data: data,
@@ -518,7 +518,7 @@ class App extends Component {
 		  Double-click on the image to begin!
 		</p>
 		<div>
-			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="596" height="334" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP}>
+			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="596" height="334" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP} ref={(cd) => {this.imgpic = cd}}>
 			  {this.state.children}
 			</ImgPic>
 			<SegTable resCoords={this.state.resCoords} resClass={this.state.resClass} header={this.state.header}>
@@ -530,15 +530,16 @@ class App extends Component {
 				return {
 					onClick: (e, handleOriginal) => {
 				        console.log("It was in this row:", rowInfo.index);
-				        
-						// Switch to the next image
-						this.switch(true, rowInfo.index)
-						// Refresh the bbox array
-						this.ImgPic.refresh()
-
 				        if (handleOriginal) {
 				          handleOriginal();
 				        }
+
+						// Switch to the next image
+						this.switch(true, rowInfo.index)
+						
+						// Refresh the bbox array
+						this.refresh()
+						this.imgpic.reviveCanvas()
 					 }
 				  }
 			   }
@@ -593,7 +594,7 @@ class SegTable extends Component {
 			   <td>
 				 <table width="auto" height="auto" border="1" align='center'>
 				  <thead>
-				   <th style={{fontFamily: 'Roboto', fontSize: 18+'px'}}>Tool</th>
+				   <th style={{width: "100px", fontFamily: 'Roboto', fontSize: 18+'px'}}>Tool</th>
 				  </thead>
 				  <tbody>
 				    <tr text-align="center">
@@ -1042,7 +1043,7 @@ class ImgPic extends Component {
 		  </table>
 		</div>
 	  <div style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>
-		Annotating frame {this.props.current} of {this.props.total}
+		<b>Frame</b> <b style={{color: "green"}}>{this.props.current}</b> of <b style={{color: "red"}}>{this.props.total}</b>
 	  </div>
 		<div style={{margin:'auto', width:this.props.width+'px', height:this.props.height+'px'}}>
 		  <canvas width={this.props.width} height={this.props.height} ref={(c) => {this.canvas=c}}/>
