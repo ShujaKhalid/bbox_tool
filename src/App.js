@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import matte from './matte.jpg';
 import axios from 'axios';
 //import 'font-awesome/css/font-awesome.css';
 import "typeface-roboto";
@@ -55,7 +56,7 @@ class App extends Component {
 		  	action:''
 	  }
 	  inst.filename = allKeys[i]
-	  inst.status = 'pending...'
+	  inst.status = 'Pending...'
 	  //console.log(data)
 	  data.push(inst)
 	}
@@ -91,9 +92,9 @@ class App extends Component {
 	  //console.log('Inside dispResult!')
 	  header: [
 		<tr style={{fontFamily: 'Roboto', fontSize: 18+'px'}} key={0}>
-		  <th style={{width: "150px"}}>No. </th>
-		  <th style={{width: "150px"}}>X</th>
-		  <th style={{width: "150px"}}>Y</th>
+		  <th style={{width: "150px"}}> <i style={{color: "white"}}>No.</i> </th>
+		  <th style={{width: "150px"}}> <i style={{color: "white"}}>X</i> </th>
+		  <th style={{width: "150px"}}> <i style={{color: "white"}}>Y</i> </th>
 		</tr>
 	  ],
 	  data: data,
@@ -350,7 +351,7 @@ class App extends Component {
   fileMarked = () => {
   	var temp = this.state.data
 
-  	temp[this.state.ind].status = 'complete :)'
+  	temp[this.state.ind].status = 'Complete :)'
 
   	this.setState({
   		data: temp
@@ -496,7 +497,7 @@ class App extends Component {
 	    getProps: (state, rowInfo, column) => {
 				    return {
 					    style: {
-					        background: rowInfo.row.status == "pending..." ? "#EBA02B" : "#7ADD43"
+					        background: rowInfo.row.status == "Pending..." ? "#EBA02B" : "#7ADD43"
 					    },
 	  			};
 	  		}
@@ -515,10 +516,12 @@ class App extends Component {
 		  <img src={logo} className="App-logo" alt="logo" />
 		  <h1 style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>Segmentation Tool</h1>
 		</header>
-		<p style={{fontFamily: 'Roboto', fontSize: 24+'px'}} >
-		  <b style={{color: "blue"}}>Double-click on the image to begin!</b>
-		</p>
 		<div>
+			<p style={{fontFamily: 'Roboto', fontSize: 24+'px'}} >
+		  		<b style={{color: "blue"}}>Double-click on the image to begin!</b>
+			</p>
+		</div>
+		<div style={{background: `url(${matte})`}}>
 			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="596" height="334" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP} ref={(cd) => {this.imgpic = cd}}>
 			  {this.state.children}
 			</ImgPic>
@@ -595,7 +598,7 @@ class SegTable extends Component {
 			   <td>
 				 <table width="auto" height="auto" border="1" align='center'>
 				  <thead>
-				   <th style={{width: "100px", fontFamily: 'Roboto', fontSize: 18+'px'}}>Tool</th>
+				   <th style={{width: "100px", fontFamily: 'Roboto', fontSize: 18+'px'}}><i style={{color: "white"}}>Tool</i></th>
 				  </thead>
 				  <tbody>
 				    <tr text-align="center">
@@ -1044,7 +1047,7 @@ class ImgPic extends Component {
 		  </table>
 		</div>
 	  <div style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>
-		<b>Frame</b> <b style={{color: "green"}}>{this.props.current}</b> of <b style={{color: "red"}}>{this.props.total}</b>
+		<b style={{color: "white"}}>Frame</b> <b style={{color: "green"}}>{this.props.current}</b> <i style={{color: "white"}}> of </i> <b style={{color: "red"}}>{this.props.total}</b>
 	  </div>
 		<div style={{margin:'auto', width:this.props.width+'px', height:this.props.height+'px'}}>
 		  <canvas width={this.props.width} height={this.props.height} ref={(c) => {this.canvas=c}}/>
