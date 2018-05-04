@@ -89,6 +89,7 @@ class App extends Component {
 	  globalKey: 0,      
 	  currLocalKey: 0, // potential draggable element 
 	  currGlobalKey: 0,
+	  serverState: '',
 	  //console.log('Inside dispResult!')
 	  header: [
 		<tr style={{fontFamily: 'Roboto', fontSize: 18+'px'}} key={0}>
@@ -99,6 +100,10 @@ class App extends Component {
 	  ],
 	  data: data,
 	}
+  }
+
+  componentDidMount() {
+  	setInterval(this.serverCheck, 5000)
   }
 
   onSelected = (rect) => {
@@ -359,6 +364,42 @@ class App extends Component {
 
   }
 
+  serverCheck = () => {
+  	console.log('Running server check!')
+  	var result = axios({
+  		method: 'get',
+  		url: 'http://localhost:3001/check'
+  	}).then(
+  		response => {
+  			let temp = []
+  			console.log(response.status);
+  			if (response.status==200) {
+  				temp.push(
+  					<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#4CD207"}}>
+					  		<b style={{color: "#458B21"}}>Server is up! \ (•◡•) / </b>
+					</div>
+		    	);
+	  		}
+	    	this.setState({
+	    		serverState: temp,
+	    	})
+	  	}
+  	).catch(
+  		error => {
+  			console.log(error);
+  			let temp = []
+  			temp.push(
+  				<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#F73420"}}>
+				  		<b style={{color: "#A32015"}}>Server is down (ㆆ_ㆆ)</b>
+				</div>
+	    	);
+	    	this.setState({
+	    		serverState: temp,
+	    	})
+  		}
+  	)
+  }
+
   // Save the results to the server
   save = () => {
 	  const data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
@@ -432,7 +473,7 @@ class App extends Component {
 		} else if (j==2) {
 			clr="#A569BD"
 		} else if (j==3) {
-			clr="##F1948A"
+			clr="#F1948A"
 		}
 
 		for (var i=0; i<this.state.defaultPosition[j].length; i+=1) {
@@ -516,11 +557,7 @@ class App extends Component {
 		  <img src={logo} className="App-logo" alt="logo" />
 		  <h1 style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>Segmentation Tool</h1>
 		</header>
-		<div>
-			<p style={{fontFamily: 'Roboto', fontSize: 24+'px'}} >
-		  		<b style={{color: "blue"}}>Double-click on the image to begin!</b>
-			</p>
-		</div>
+		{this.state.serverState}
 		<div style={{background: `url(${matte})`}}>
 			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="596" height="334" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP} ref={(cd) => {this.imgpic = cd}}>
 			  {this.state.children}
@@ -556,9 +593,6 @@ class App extends Component {
 			    );
 			  }}	
 				getProps={(state, rowInfo, column) => {
-					console.log(rowInfo)
-					console.log(this.state.ind)
-					console.log(column)
 				    return {
 				      style: {
 				        //background: rowInfo > 20 ? "green" : "red"

@@ -54,6 +54,13 @@ app.use(function(req, res, next) {
 //   console.log('stderr:', stderr);
 // }
 
+app.get('/check', function(req, res) {
+	console.log(res)
+	console.log('------------------------------------------------------------------')
+	console.log(res)
+	res.send('Done!')
+})
+
 app.post('/send', function(req,res) {
 	console.log(__dirname+'/log.json')
 	var file_contents = fs.readFileSync(__dirname+'/log.json','utf8')
