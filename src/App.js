@@ -213,6 +213,7 @@ class App extends Component {
 	  children: [],
 	  result: [],
 	  resCoords: [],
+	  resClass: [],
 	  lastClick: [],
 	  localKey: -1,
 	  globalKey: 0,
@@ -525,7 +526,7 @@ class App extends Component {
 			</SegTable>
 		</div>
 		<div>
-			<ReactTable className="-highlight" data={this.state.data} columns={files} defaultPageSize={allKeys.length}
+			<ReactTable className="-highlight" data={this.state.data} columns={files} defaultPageSize={5}
 			getTdProps={(state, rowInfo, column, instance) => {
 				return {
 					onClick: (e, handleOriginal) => {
