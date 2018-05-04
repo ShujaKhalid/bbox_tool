@@ -512,10 +512,10 @@ class App extends Component {
 	  <div className="App">
 		<header className="App-header">
 		  <img src={logo} className="App-logo" alt="logo" />
-		  <h1 className="App-title">Segmentation Tool</h1>
+		  <h1 style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>Segmentation Tool</h1>
 		</header>
-		<p className="App-intro">
-		  Double-click on the image to begin!
+		<p style={{fontFamily: 'Roboto', fontSize: 24+'px'}} >
+		  <b style={{color: "blue"}}>Double-click on the image to begin!</b>
 		</p>
 		<div>
 			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="596" height="334" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP} ref={(cd) => {this.imgpic = cd}}>
