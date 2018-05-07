@@ -375,8 +375,8 @@ class App extends Component {
   			console.log(response.status);
   			if (response.status==200) {
   				temp.push(
-  					<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#4CD207"}}>
-					  		<b style={{color: "#458B21"}}>Server is up! \ (•◡•) / </b>
+  					<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#3498DB"}}>
+					  		<b style={{color: "#21618C"}}>Server is up! \ (•◡•) / </b>
 					</div>
 		    	);
 	  		}
@@ -389,8 +389,8 @@ class App extends Component {
   			console.log(error);
   			let temp = []
   			temp.push(
-  				<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#F73420"}}>
-				  		<b style={{color: "#A32015"}}>Server is down (ㆆ_ㆆ)</b>
+  				<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#A569BD"}}>
+				  		<b style={{color: "#6C3483"}}>Server is down (ㆆ_ㆆ)</b>
 				</div>
 	    	);
 	    	this.setState({
@@ -491,13 +491,37 @@ class App extends Component {
 			  <tr bgcolor={clr} height={hgt}>	
 				<select background="rgba(0,0,0,0.3)" className={j} onChange={this.classify}>
 				  <option value="0"> - </option>
-				  <option value="1"> Grasper </option>
-				  <option value="2"> Bipolar </option>
-				  <option value="3"> Hook </option>
-				  <option value="4"> Scissors </option>
-				  <option value="5"> Clipper </option>
-				  <option value="6"> Irrigator </option>
-				  <option value="7"> Specimen Bag </option>
+				  <option value="1"> Ultrasonic Dissector </option>
+				  <option value="2"> Monopolar </option>
+				  <option value="3"> Advanced Bipolar </option>
+				  <option value="4"> Stapler </option>
+				  <option value="5"> Clip Applier </option>
+				  <option value="6"> Veress Needle </option>
+				  <option value="7"> Marking Needle </option>
+				  <option value="8"> Suture Needle </option>
+				  <option value="9"> Trocar </option>
+				  <option value="10"> Suture Passer </option>
+				  <option value="11"> Endo-Close </option>
+				  <option value="12"> Scissors </option>
+				  <option value="13"> Maryland </option>
+				  <option value="14"> Bowel Grasper </option>
+				  <option value="15"> Toothed Grasper </option>
+				  <option value="16"> Needle Driver </option>
+				  <option value="17"> Right Angle Dissector </option>
+				  <option value="18"> Kelly Forceps </option>
+				  <option value="19"> Suction </option>
+				  <option value="20"> Nathanson Retractor </option>
+				  <option value="21"> Back Scratcher </option>
+				  <option value="22"> Fixation Device </option>
+				  <option value="23"> Endo-Bag </option>
+				  <option value="24"> Suture </option>
+				  <option value="25"> Surgical Drain </option>
+				  <option value="26"> Gastric Band </option>
+				  <option value="27"> Mesh </option>
+				  <option value="28"> Camera/Image </option>
+				  <option value="29"> Bougie </option>
+				  <option value="30"> Other </option>
+				  <option value="31"> N/A </option>
 				</select>
 			  </tr>
 			);
@@ -1082,7 +1106,7 @@ class ImgPic extends Component {
 		  </table>
 		</div>
 	  <div style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>
-		<b style={{color: "white"}}>Frame</b> <b style={{color: "green"}}>{this.props.current}</b> <i style={{color: "white"}}> of </i> <b style={{color: "red"}}>{this.props.total}</b>
+		<b style={{color: "white"}}>Frame</b> <b style={{color: "#F1C40F"}}>{this.props.current}</b> <i style={{color: "white"}}> of </i> <b style={{color: "#E67E22"}}>{this.props.total}</b>
 	  </div>
 		<div style={{margin:'auto', width:this.props.width+'px', height:this.props.height+'px'}}>
 		  <canvas width={this.props.width} height={this.props.height} ref={(c) => {this.canvas=c}}/>

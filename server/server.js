@@ -55,9 +55,9 @@ app.use(function(req, res, next) {
 // }
 
 app.get('/check', function(req, res) {
-	console.log(res)
-	console.log('------------------------------------------------------------------')
-	console.log(res)
+	// console.log(res)
+	// console.log('------------------------------------------------------------------')
+	// console.log(res)
 	res.send('Done!')
 })
 
