@@ -491,37 +491,16 @@ class App extends Component {
 			  <tr bgcolor={clr} height={hgt}>	
 				<select background="rgba(0,0,0,0.3)" className={j} onChange={this.classify}>
 				  <option value="0"> - </option>
-				  <option value="1"> Ultrasonic Dissector </option>
-				  <option value="2"> Monopolar </option>
-				  <option value="3"> Advanced Bipolar </option>
-				  <option value="4"> Stapler </option>
-				  <option value="5"> Clip Applier </option>
-				  <option value="6"> Veress Needle </option>
-				  <option value="7"> Marking Needle </option>
-				  <option value="8"> Suture Needle </option>
-				  <option value="9"> Trocar </option>
-				  <option value="10"> Suture Passer </option>
-				  <option value="11"> Endo-Close </option>
-				  <option value="12"> Scissors </option>
-				  <option value="13"> Maryland </option>
-				  <option value="14"> Bowel Grasper </option>
-				  <option value="15"> Toothed Grasper </option>
-				  <option value="16"> Needle Driver </option>
-				  <option value="17"> Right Angle Dissector </option>
-				  <option value="18"> Kelly Forceps </option>
-				  <option value="19"> Suction </option>
-				  <option value="20"> Nathanson Retractor </option>
-				  <option value="21"> Back Scratcher </option>
-				  <option value="22"> Fixation Device </option>
-				  <option value="23"> Endo-Bag </option>
-				  <option value="24"> Suture </option>
-				  <option value="25"> Surgical Drain </option>
-				  <option value="26"> Gastric Band </option>
-				  <option value="27"> Mesh </option>
-				  <option value="28"> Camera/Image </option>
-				  <option value="29"> Bougie </option>
-				  <option value="30"> Other </option>
-				  <option value="31"> N/A </option>
+				  <option value="1"> Stapler </option>
+				  <option value="2"> Needle </option>
+				  <option value="3"> Suction </option>
+				  <option value="4"> Nathanson Retractor </option>
+				  <option value="5"> Endo-Bag </option>
+				  <option value="6"> Suture </option>
+				  <option value="7"> Tip </option>
+				  <option value="8"> Shaft </option>
+				  <option value="9"> Bougie </option>
+				  <option value="10"> Other </option>
 				</select>
 			  </tr>
 			);
