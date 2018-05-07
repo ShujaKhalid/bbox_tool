@@ -124,7 +124,7 @@ class App extends Component {
 	var dragHandlers = {onStart: this.onStart, onStop: this.onStop};
 	var cirRad = 4 // Radius of the circular vertex (Adjusted in css file)
 	var offsetX = cirRad
-	var offsetY = cirRad+337 //Hard coded for now
+	var offsetY = cirRad+720+4 //Hard coded for now
 	var controlledPosition = []
 	var i = this.state.maskP.length-1
 	//console.log(this.props.height)
@@ -584,7 +584,7 @@ class App extends Component {
 		  <h1 style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>Segmentation Tool</h1>
 		</header>
 		<div style={{background: `url(${matte})`}}>
-			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="596" height="334" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP} ref={(cd) => {this.imgpic = cd}}>
+			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="1280" height="720" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP} ref={(cd) => {this.imgpic = cd}}>
 			  {this.state.children}
 			</ImgPic>
 			<SegTable resCoords={this.state.resCoords} resClass={this.state.resClass} header={this.state.header}>
@@ -677,8 +677,8 @@ class SegTable extends Component {
 /// Here is the lower level component (Canvas)
 class ImgPic extends Component {
   static defaultProps = {
-	width: 320,
-	height: 200,
+	width: 1280,
+	height: 720,
 	strokeStyle: '#F00',
 	lineWidth: 1,
 	onSelected: () => {},
