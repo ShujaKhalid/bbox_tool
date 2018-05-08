@@ -4,6 +4,9 @@ var app = express()
 var fs = require('fs')
 var util = require('util');
 var exec = util.promisify(require('child_process').exec);
+var mongo = require('mongodb');
+var MongoClient = require('mongodb').MongoClient;
+var url = "mongodb://localhost:27017/SST";
 
 app.use(bodyParser.json())
 app.use(express.static('public'))
@@ -54,15 +57,112 @@ app.use(function(req, res, next) {
 //   console.log('stderr:', stderr);
 // }
 
-app.get('/check', function(req, res) {
+app.get('/checkexp', function(req, res) {
 	// console.log(res)
 	// console.log('------------------------------------------------------------------')
 	// console.log(res)
 	res.send('Done!')
 })
 
+app.get('/checkdb', function(req, res) {
+	// console.log(res)
+	// console.log('------------------------------------------------------------------')
+	// console.log(res)
+	MongoClient.connect(url, function(err, db) {
+		var dbo = db.db("SST");
+		var myquery = { pic: /^./ };
+
+		// Check to see if there are any errors
+	    if (err) {
+	  	    throw err;
+	  	    res.send(err);
+	    } else {
+		    res.send("Database exists!")
+	    }
+
+		// Display the contents of the database
+	 	dbo.collection("imageData").find({}).toArray(function(err, result) {
+		    if (err) throw err;
+		    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		    console.log(result)
+			db.close();
+		});
+
+		// Delete the contents of the database
+	    dbo.collection("imageData").deleteMany(myquery, function(err, result) {
+		    if (err) throw err;
+		    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		    console.log('No. of items deleted: '+result.result.n)
+			db.close();
+		});
+
+	});
+})
+
+// Write to the Mongo database
+app.post('/writedb', function(req,res) {
+
+	// MongoDB initialization
+	MongoClient.connect(url, function(err, db) {
+	  if (err) throw err;
+
+	  // Get sent data
+	  var data = req.body
+	  var dbo = db.db("SST");
+
+	  // Create the collection if it does not already exist
+	  dbo.createCollection("imageData", function(err, res) {
+	    if (err) throw err;
+
+	    // Insert the new image data into the database
+
+        dbo.collection("imageData").findAndModify(
+        	{pic: data.pic},
+        	[['_id','asc']],  // sort order
+       		{$setOnInsert: {bbox: data.bbox, mask: data.mask, class: data.class}}, 
+        	{new: true,	upsert: true}, 
+    		function(err, res) {
+		        if (err) throw err;
+		        console.log("1 document inserted");
+		        db.close();
+	    	});
+
+	    });
+
+	}); 
+
+	res.send('Done!');
+
+})
+
+// Write to the Mongo database
+app.post('/updatedb', function(req,res) {
+
+	// MongoDB initialization
+	MongoClient.connect(url, function(err, db) {
+	    if (err) throw err;
+
+	    // Get sent data
+	    var data = req.body
+	    var dbo = db.db("SST");
+	    var myquery = {filename: ""};  
+	    var newvalues = { $set: {name: "", address: ""}}
+	 
+	    // Insert the new image data into the database
+	    dbo.collection("imageData").updateOne(data, function(err, res) {
+	      if (err) throw err;
+	      console.log("1 document inserted");
+	      db.close();
+	    });
+	}); 
+
+	res.send('Updated Collection \'imageData\' in SST!');
+
+})
+
+// Write the data to a json file
 app.post('/send', function(req,res) {
-	console.log(__dirname+'/log.json')
+	//console.log(__dirname+'/log.json')
 	var file_contents = fs.readFileSync(__dirname+'/log.json','utf8')
 	var text = JSON.parse(file_contents)
 

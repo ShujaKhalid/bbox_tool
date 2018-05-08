@@ -90,6 +90,7 @@ class App extends Component {
 	  currLocalKey: 0, // potential draggable element 
 	  currGlobalKey: 0,
 	  serverState: '',
+	  dbState: '',
 	  //console.log('Inside dispResult!')
 	  header: [
 		<tr style={{fontFamily: 'Roboto', fontSize: 18+'px'}} key={0}>
@@ -103,7 +104,8 @@ class App extends Component {
   }
 
   componentDidMount() {
-  	setInterval(this.serverCheck, 5000)
+  	//setInterval(this.serverCheck, 5000)
+  	//setInterval(this.dbCheck, 5000)
   }
 
   onSelected = (rect) => {
@@ -228,6 +230,8 @@ class App extends Component {
 	  defaultPosition: [[],[],[],[],[],[],[],[],[],[]],
 	  segClass: [[],[],[],[],[],[],[],[],[],[]],
 	})
+
+	return Promise.resolve('Refresh Complete!');
 };
 
   undo = () => {
@@ -324,6 +328,8 @@ class App extends Component {
 			}
 		}
 
+	  return Promise.resolve('Hello');
+
   }
 
   checks = () => {
@@ -362,13 +368,15 @@ class App extends Component {
   		data: temp
   	})
 
+  	return Promise.resolve('Complete!');
+
   }
 
   serverCheck = () => {
   	console.log('Running server check!')
   	var result = axios({
   		method: 'get',
-  		url: 'http://localhost:3001/check'
+  		url: 'http://localhost:3001/checkexp'
   	}).then(
   		response => {
   			let temp = []
@@ -400,10 +408,71 @@ class App extends Component {
   	)
   }
 
+  dbCheck = () => {
+  	console.log('Running db check!')
+  	var result = axios({
+  		method: 'get',
+  		url: 'http://localhost:3001/checkdb'
+  	}).then(
+  		response => {
+  			let temp = []
+  			console.log(response);
+  			if (response.status==200) {
+  				temp.push(
+  					<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#3498DB"}}>
+					  		<b style={{color: "#21618C"}}>Database is up! \ (•◡•) / </b>
+					</div>
+		    	);
+	  		}
+	    	this.setState({
+	    		dbState: temp,
+	    	})
+	  	}
+  	).catch(
+  		error => {
+  			console.log(error);
+  			let temp = []
+  			temp.push(
+  				<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#A569BD"}}>
+				  		<b style={{color: "#6C3483"}}>Database is down (ㆆ_ㆆ)</b>
+				</div>
+	    	);
+	    	this.setState({
+	    		dbState: temp,
+	    	})
+  		}
+  	)
+  }
+
+  // Write to the database
+  dbWrite = () => {
+  	const data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
+  	console.log('Saving the results to the database')
+  	var result = axios({
+  		method: 'post',
+ 	    data: data,
+  		url: 'http://localhost:3001/writedb',
+  		config: {headers: {'Content-Type': 'json'}}
+  	}).then(
+  		response => {
+  			console.log(response);
+  			return Promise.resolve('Hello');
+	  	}
+  	).catch(
+  		error => {
+  			console.log(error);
+  			return Promise.resolve('Hello');
+  		}
+  	)
+
+	return Promise.resolve('Hello');
+
+  }
+
   // Save the results to the server
   save = () => {
 	  const data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
-	  console.log(data)
+	  //console.log(data)
 
 	  // Make the POST request using axios
 	  return axios({method: 'post',
@@ -412,19 +481,69 @@ class App extends Component {
 		   config: {headers: {'Content-Type': 'json'}}
 		   }).then(response => {
 
-		   		// Mark the filename as complete!
-				this.fileMarked()
-				// Switch to the next image
-				this.switch(false, null)
-				// Refresh the bbox array
-				this.refresh()
-				// Display the result
-				this.dispResult()
+		   return this.dbWrite()
+		    .then(() => {
+		      return this.fileMarked()
+		        .then(() => {          
+		          return this.switch(false, null)
+		            .then(() => {          
+		          	  return this.refresh()
+		          		.then(() => {          
+		          		  return this.dispResult()
+		          		})
+		          	})
+		        })
+		    })
 
-				return 'allSystemsGo'
+		  //  	let promise = new Promise((resolve, reject) => {
+		  //  		// Write to the database
+				// this.dbWrite()
+
+		  //  	}).then(function () {
+		  //  		console.log('Before file marking...')
+
+		  //  		// Mark the filename as complete!
+				// this.fileMarked()
+				// //return 'fileMarked complete'
+		  //  		console.log('After file marking...')
+
+		  //  	}).then(() => {
+		  //  		console.log('Before switch...')
+
+		  //  		// Switch to the next image
+				// this.switch(false, null)
+				// //return 'switch complete'
+		  //  		console.log('After switch...')
+
+		  //  	}).then(() => {
+		  //  		console.log('Before refreshing...')
+
+				// // Refresh the bbox array
+				// this.refresh()
+				// //return 'refresh complete'
+		  //  		console.log('After refreshing...')
+
+		  //  	}).then(() => {
+		  //  		console.log('Before dispResult...')
+
+				// // Display the result
+				// this.dispResult()
+				// //return 'dispResult complete'
+		  //  		console.log('After dispResult...')
+
+		  //  	})
+
+		  //  	let promise = new Promise(
+				// this.dbWrite())
+		  //  	.then(this.fileMarked())
+		  //  	.then(this.switch(false, null))
+		  //  	.then(this.refresh())
+		  //  	.then(this.dispResult())		   	
+
+			return 'allSystemsGo'
 
 		  }).catch(function (error) {
-			//console.log(error);
+			console.log(error);
 			confirmAlert({
 					title: 'Connection error...',
 					message: 'Make sure the data server is running on port 3001',
@@ -559,6 +678,7 @@ class App extends Component {
 	return (
 	  <div className="App">
 	    {this.state.serverState}
+	    {this.state.dbState}
 		<header style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>
 		  <h1 style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>Segmentation Tool</h1>
 		</header>
@@ -944,6 +1064,7 @@ class ImgPic extends Component {
 	this.isDirty = true
 	this.isDragPoly = true
 	this.reviveCanvas()
+	this.updateCanvas()
 	//requestAnimationFrame(this.updateCanvas) 
   };
 
