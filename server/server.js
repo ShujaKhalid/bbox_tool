@@ -88,13 +88,13 @@ app.get('/checkdb', function(req, res) {
 			db.close();
 		});
 
-		// Delete the contents of the database
-	    dbo.collection("imageData").deleteMany(myquery, function(err, result) {
-		    if (err) throw err;
-		    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-		    console.log('No. of items deleted: '+result.result.n)
-			db.close();
-		});
+		// // Delete the contents of the database
+	 //    dbo.collection("imageData").deleteMany(myquery, function(err, result) {
+		//     if (err) throw err;
+		//     console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		//     console.log('No. of items deleted: '+result.result.n)
+		// 	db.close();
+		// });
 
 	});
 })
@@ -115,7 +115,6 @@ app.post('/writedb', function(req,res) {
 	    if (err) throw err;
 
 	    // Insert the new image data into the database
-
         dbo.collection("imageData").findAndModify(
         	{pic: data.pic},
         	[['_id','asc']],  // sort order
@@ -174,7 +173,7 @@ app.post('/send', function(req,res) {
              console.log(err.stack);
           });
 
-    console.log(file_contents)
+    //console.log(file_contents)
 
     // Get sent data
 	data = req.body
@@ -197,7 +196,7 @@ app.post('/send', function(req,res) {
 	// Run the model on the file in the test folder
 	//runInference();
 
-	console.log(text)
+	//console.log(text)
 	wstream.write(JSON.stringify(text)); 
 	wstream.end()
 

@@ -103,6 +103,7 @@ class App extends Component {
 	}
   }
 
+  ///
   componentDidMount() {
   	//setInterval(this.serverCheck, 5000)
   	//setInterval(this.dbCheck, 5000)
@@ -215,6 +216,7 @@ class App extends Component {
   }
 
   refresh = () => {
+  	console.log('4. Refresh Complete!')
 	this.setState({
 	  selected: true,
 	  bboxes: [],
@@ -231,7 +233,10 @@ class App extends Component {
 	  segClass: [[],[],[],[],[],[],[],[],[],[]],
 	})
 
+	this.imgpic.reviveCanvas()
+
 	return Promise.resolve('Refresh Complete!');
+
 };
 
   undo = () => {
@@ -302,7 +307,7 @@ class App extends Component {
   };
 
   switch = (flag, ind) => {
-		//console.log('Inside switch!')
+		console.log('3. Switching to the next screen!')
 
 		// Switching to another image right away
 		if (flag) {
@@ -337,17 +342,19 @@ class App extends Component {
 		for (let i=0; i<this.state.globalKey+1; i++) {
 			// The checks only matter if there is a mask
 			// i.e. if there is no mask, still send the information through
-			if (this.state.defaultPosition[i].length>0) {
-				var valClass = this.state.segClass[i]
 
-				// Must have atleast globalKey+1 non-null 
-				// values in the array 
-				if (valClass.length==0) {
-					return 'classMiss';
-				};
-			};
+			// --- DISABLED FOR CURRENT VERSION ---
+			// if (this.state.defaultPosition[i].length>0) {
+			// 	var valClass = this.state.segClass[i]
 
-			// DISABLED AS IT IS NOT REQUIRED FOR MASK-RCNN
+			// 	// Must have atleast globalKey+1 non-null 
+			// 	// values in the array 
+			// 	if (valClass.length==0) {
+			// 		return 'classMiss';
+			// 	};
+			// };
+
+			// --- DISABLED AS IT IS NOT REQUIRED FOR MASK-RCNN ---
 			// var valBbox = this.state.bboxes
 			// // Check to see if there are atleast globalKey+1 bboxes
 			// if (valBbox.length!==this.state.globalKey+1) {
@@ -360,6 +367,7 @@ class App extends Component {
   }
 
   fileMarked = () => {
+  	console.log('2. Marking the files!')
   	var temp = this.state.data
 
   	temp[this.state.ind].status = 'Complete :)'
@@ -447,7 +455,7 @@ class App extends Component {
   // Write to the database
   dbWrite = () => {
   	const data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
-  	console.log('Saving the results to the database')
+  	console.log('1. Saving the results to the database')
   	var result = axios({
   		method: 'post',
  	    data: data,
@@ -481,6 +489,7 @@ class App extends Component {
 		   config: {headers: {'Content-Type': 'json'}}
 		   }).then(response => {
 
+		   // If method is successful, complete a bunch of tasks
 		   return this.dbWrite()
 		    .then(() => {
 		      return this.fileMarked()
@@ -581,7 +590,7 @@ class App extends Component {
 	var resCoords = []
 	var resClass = []
 	var clr = ""
- 	//console.log(this.state.globalKey)
+ 	console.log('5. Displaying the results')
  	//console.log(this.state.defaultPosition)
 	for (var j=0; j<=this.state.globalKey; j+=1) {
 		
@@ -677,8 +686,8 @@ class App extends Component {
 
 	return (
 	  <div className="App">
-	    {this.state.serverState}
-	    {this.state.dbState}
+  	  	{this.state.serverState}
+  	    {this.state.dbState}
 		<header style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>
 		  <h1 style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>Segmentation Tool</h1>
 		</header>
@@ -1057,14 +1066,13 @@ class ImgPic extends Component {
   };
 
   refresh = () => {
-	console.log('Refreshing!')
 	// Refresh the bbox array
 	this.props.refresh()
 	// Update the canvas
 	this.isDirty = true
 	this.isDragPoly = true
 	this.reviveCanvas()
-	this.updateCanvas()
+	return Promise.resolve('Refresh Complete!');
 	//requestAnimationFrame(this.updateCanvas) 
   };
 
