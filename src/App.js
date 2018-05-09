@@ -49,7 +49,8 @@ class App extends Component {
 	  var inst = {
 			filename: '',
 		  	status: '',
-		  	action:''
+		  	class:'',
+		  	mask:'',
 	  }
 
 	  // Conditions for displaying data in the table
@@ -103,7 +104,7 @@ class App extends Component {
 
   ///
   componentDidMount() {
-  	//setInterval(this.serverCheck, 5000)
+  	//setInterval(this.serverCheck, 10000)
   	//setInterval(this.dbCheck, 10000)
   	this.tableUpdate('all')
   }
@@ -128,11 +129,69 @@ class App extends Component {
 		  				console.log(response)
 		  			}
 		  		
-					// Conditions for displaying data in the table
-					if (response.data[0].status == 'complete') {
+					// --- Conditions for displaying data in the table ---
+
+					// Complete is all of the requirements are met
+					if (response.data[0].mask[0].length!=0 && response.data[0].class[0].length!=0) {
 						data[j].status = 'Complete! 😊'
 					} else {
+						data[j].status = 'In Progress... ⏰'
+					} 
+
+					// Pending status if nothing has been done
+					if (response.data[0].mask[0].length==0 && response.data[0].class[0].length==0) {
 						data[j].status = 'Pending... 👀'
+					}
+					
+					// Add class information here for the specific image
+					if (response.data[0].class[0].length!=0) {
+						//data[j].class = response.data[0].class
+						var classes = []
+						for (let i=0; i<10; i++) {
+							if (response.data[0].class[i].length!=0) {
+								if (response.data[0].class[i]==0) {
+									classes.push('Stapler');
+								} else if (response.data[0].class[i]==1) {
+									classes.push('Needle');
+								} else if (response.data[0].class[i]==2) {
+									classes.push('Suction');
+								} else if (response.data[0].class[i]==3) {
+									classes.push('Nathanson Retractor');
+								} else if (response.data[0].class[i]==4) {
+									classes.push('Endo-Bag');
+								} else if (response.data[0].class[i]==5) {
+									classes.push('Suture');
+								} else if (response.data[0].class[i]==6) {
+									classes.push('Tip');
+								} else if (response.data[0].class[i]==7) {
+									classes.push('Shaft');
+								} else if (response.data[0].class[i]==8) {
+									classes.push('Bougie');
+								} else if (response.data[0].class[i]==9) {
+									classes.push('Other');
+								}
+								 
+							} else {
+								break;
+							}
+							
+						}
+						data[j].class = classes.toString()
+					}
+					
+					// Add class information here for the specific image
+					if (response.data[0].mask[0].length!=0) {
+						//data[j].class = "1"
+						var qty = 0
+						for (let i=0; i<10; i++) {
+							if (response.data[0].mask[i].length!=0) {
+								qty += 1; 
+							} else {
+								break;
+							}
+							
+						}
+						data[j].mask = qty
 					}
 
 					this.setState({
@@ -149,49 +208,6 @@ class App extends Component {
 
 
 	 } 
-
-	 // else if ('one') {
-  //    	const body = {pic: this.state.currKey}
-		// var result = axios({
-		// 	method: 'post',
-		// 	data: body,
-		// 	url: 'http://localhost:3001/readdb',
-		// 	config: {headers: {'Content-Type': 'json'}},
-	 //  	}).then(
-	 //  		response => {
-	 //  			console.log(response.data);
-		// 		for (let i=0; i<allKeys.length; i++) {
-		// 	   	   if (response.data[i] != null && response.data[i].pic != null) {
-		// 			  var inst = {
-		// 					filename: '',
-		// 				  	status: '',
-		// 				  	action:''
-		// 			  }
-
-		// 			  // Conditions for displaying data in the table
-		// 			  if (response.data[i].pic != null) {
-		// 				  inst.filename = response.data[i].pic.substring(2)
-		// 				  inst.status = 'Pending...'
-		// 				  //console.log(data)
-		// 				  data.push(inst)
-		// 			  }
-		// 		   }
-
-		// 		}
-		// 		console.log(data)
-
-		// 		this.setState({
-		// 			data: data,
-		// 		})
-
-		//   	}
-	 //  	).catch(
-	 //  		error => {
-	 //  			console.log(error);
-	 //  		}
-	 //  	)
-
-	 //} // else if ends here
 
   } 
 
@@ -514,7 +530,7 @@ class App extends Component {
   			//console.log(response);
   			if (response.status==200) {
   				temp.push(
-  					<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#3498DB"}}>
+  					<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#D7F10F"}}>
 					  		<b style={{color: "#21618C"}}>Database is up! \ (•◡•) / </b>
 					</div>
 		    	);
@@ -541,7 +557,7 @@ class App extends Component {
 
   // Write to the database
   dbWrite = () => {
-  	const data = {pic: this.state.currKey.substring(2), status: 'complete', bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
+  	const data = {pic: this.state.currKey.substring(2), bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
   	console.log('1. Saving the results to the database')
   	var result = axios({
   		method: 'post',
@@ -756,17 +772,24 @@ class App extends Component {
 	    getProps: (state, rowInfo, column) => {
 	    		  return {
 				    style: {
-				        background: rowInfo.row.status == "Pending... 👀" ? "#EBA02B" : "#7ADD43"
+				        background: rowInfo.row.status == "Pending... 👀" ? "#EBA02B" : (rowInfo.row.status == "In Progress... ⏰" ? "#D7F10F" : "#0FC3F1")
 				    },
   				  };
 	  		}
 	  }, {
-	    id: 'class', // Required because our accessor is not a string
-	    Header: 'Class',
-	    accessor: d => d.class // Add link to image here to toggle to it
+	    Header: 'Class(es)',
+	    accessor: 'class',
+	    getProps: (state, rowInfo, column) => {
+	    		  return {
+				    style: {
+				        fontFamily: 'Roboto',
+				        fontWeight: "bold",
+				    },
+  				  };
+	  		}
 	  }, {
-	    Header: props => <span>Delete</span>, // Custom header components!
-	    accessor: 'filename.delete'
+	    Header: props => <span>Mask Quantity</span>, // Custom header components!
+	    accessor: 'mask'
 	  }]
 
 		  //<img src={logo} className="App-logo" alt="logo" />
