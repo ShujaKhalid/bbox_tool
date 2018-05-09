@@ -125,9 +125,9 @@ class App extends Component {
 		  	}).then(
 		  		response => {
 		  			var data = this.state.data
-		  			if (response.data.length>0) {
-		  				console.log(response)
-		  			}
+		  			// if (response.data.length>0) {
+		  			// 	console.log(response)
+		  			// }
 		  		
 					// --- Conditions for displaying data in the table ---
 
@@ -147,28 +147,28 @@ class App extends Component {
 					if (response.data[0].class[0].length!=0) {
 						//data[j].class = response.data[0].class
 						var classes = []
-						for (let i=0; i<10; i++) {
+						for (let i=0; i<=10; i++) {
 							if (response.data[0].class[i].length!=0) {
-								if (response.data[0].class[i]==0) {
-									classes.push('Stapler');
-								} else if (response.data[0].class[i]==1) {
-									classes.push('Needle');
+								if (response.data[0].class[i]==1) {
+									classes.push(' Stapler');
 								} else if (response.data[0].class[i]==2) {
-									classes.push('Suction');
+									classes.push(' Needle');
 								} else if (response.data[0].class[i]==3) {
-									classes.push('Nathanson Retractor');
+									classes.push(' Suction');
 								} else if (response.data[0].class[i]==4) {
-									classes.push('Endo-Bag');
+									classes.push(' Nathanson Retractor');
 								} else if (response.data[0].class[i]==5) {
-									classes.push('Suture');
+									classes.push(' Endo-Bag');
 								} else if (response.data[0].class[i]==6) {
-									classes.push('Tip');
+									classes.push(' Suture');
 								} else if (response.data[0].class[i]==7) {
-									classes.push('Shaft');
+									classes.push(' Tip');
 								} else if (response.data[0].class[i]==8) {
-									classes.push('Bougie');
+									classes.push(' Shaft');
 								} else if (response.data[0].class[i]==9) {
-									classes.push('Other');
+									classes.push(' Bougie');
+								} else if (response.data[0].class[i]==10) {
+									classes.push(' Other');
 								}
 								 
 							} else {
@@ -181,7 +181,6 @@ class App extends Component {
 					
 					// Add class information here for the specific image
 					if (response.data[0].mask[0].length!=0) {
-						//data[j].class = "1"
 						var qty = 0
 						for (let i=0; i<10; i++) {
 							if (response.data[0].mask[i].length!=0) {
@@ -211,6 +210,60 @@ class App extends Component {
 
   } 
 
+
+  frameUpdate = (key) => {
+
+		let currKey = allKeys[key].substring(2)
+     	var body = {pic: currKey}
+		var result = axios({
+			method: 'post',
+			data: body,
+			url: 'http://localhost:3001/readdb',
+			config: {headers: {'Content-Type': 'json'}},
+	  	}).then(
+		  		response => {
+		  			var data = this.state.data
+		  			console.log(response.data[0].mask)
+		  			console.log(response.data[0].mask[0])
+		  			// Calculate the total no. of masks
+					if (response.data[0].mask[0].length!=0) {
+						var qty = 0
+						for (let i=0; i<10; i++) {
+							if (response.data[0].mask[i].length!=0) {
+								qty += 1; 
+							} else {
+								break;
+							}
+							
+						}
+					}
+
+					// Extract mask information here
+					for (let j=0; j<qty; j++) {
+					  this.setState({
+					  	globalKey: j,
+					  })
+					  for (let i=0; i<response.data[0].mask[j].length; i++) {
+					  	this.setState({
+					  		localKey: i-1,
+					  	})
+						if (response.data[0].mask[j].length!=0) {
+							this.onMaskP(response.data[0].mask[j][i]);
+						} else {
+							break;
+						}
+					  }
+					}
+					this.imgpic.updateCanvas()
+			  	}
+		  	).catch(
+		  		error => {
+		  			console.log(error);
+		  		}
+		  	)
+  }
+
+
   onSelected = (rect) => {
 	if (!rect==0) { 	
 		this.state.bboxes.push(rect)
@@ -230,7 +283,7 @@ class App extends Component {
 	var dragHandlers = {onStart: this.onStart, onStop: this.onStop};
 	var cirRad = 4 // Radius of the circular vertex (Adjusted in css file)
 	var offsetX = cirRad
-	var offsetY = cirRad+720+4 //Hard coded for now
+	var offsetY = cirRad+720+4 // Hard coded for now
 	var controlledPosition = []
 	var i = this.state.maskP.length-1
 	//console.log(this.props.height)
@@ -385,6 +438,7 @@ class App extends Component {
 	}
 
 	this.dispResult()
+
   };
 
   next = () => {
@@ -580,6 +634,31 @@ class App extends Component {
 
   }
 
+  // Write to the database
+  dbUpload = () => {
+  	const data = {pic: this.state.currKey.substring(2), bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
+  	console.log('1. Saving the results to the database')
+  	var result = axios({
+  		method: 'post',
+ 	    data: data,
+  		url: 'http://localhost:3001/writedb',
+  		config: {headers: {'Content-Type': 'json'}}
+  	}).then(
+  		response => {
+  			console.log(response);
+  			return Promise.resolve('Hello');
+	  	}
+  	).catch(
+  		error => {
+  			console.log(error);
+  			return Promise.resolve('Hello');
+  		}
+  	)
+
+	return Promise.resolve('Hello');
+
+  }
+
   // Save the results to the server
   save = () => {
 	  const data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
@@ -605,52 +684,7 @@ class App extends Component {
 		          		})
 		          	})
 		        })
-		    })
-
-		  //  	let promise = new Promise((resolve, reject) => {
-		  //  		// Write to the database
-				// this.dbWrite()
-
-		  //  	}).then(function () {
-		  //  		console.log('Before file marking...')
-
-		  //  		// Mark the filename as complete!
-				// this.fileMarked()
-				// //return 'fileMarked complete'
-		  //  		console.log('After file marking...')
-
-		  //  	}).then(() => {
-		  //  		console.log('Before switch...')
-
-		  //  		// Switch to the next image
-				// this.switch(false, null)
-				// //return 'switch complete'
-		  //  		console.log('After switch...')
-
-		  //  	}).then(() => {
-		  //  		console.log('Before refreshing...')
-
-				// // Refresh the bbox array
-				// this.refresh()
-				// //return 'refresh complete'
-		  //  		console.log('After refreshing...')
-
-		  //  	}).then(() => {
-		  //  		console.log('Before dispResult...')
-
-				// // Display the result
-				// this.dispResult()
-				// //return 'dispResult complete'
-		  //  		console.log('After dispResult...')
-
-		  //  	})
-
-		  //  	let promise = new Promise(
-				// this.dbWrite())
-		  //  	.then(this.fileMarked())
-		  //  	.then(this.switch(false, null))
-		  //  	.then(this.refresh())
-		  //  	.then(this.dispResult())		   	
+		    })		   	
 
 			return 'allSystemsGo'
 
@@ -813,7 +847,6 @@ class App extends Component {
 			getTdProps={(state, rowInfo, column, instance) => {
 				return {
 					onClick: (e, handleOriginal) => {
-				        console.log("It was in this row:", rowInfo.index);
 
 						// Switch to the next image
 						this.switch(true, rowInfo.index)
@@ -821,6 +854,7 @@ class App extends Component {
 						// Refresh the bbox array
 						this.refresh()
 						this.imgpic.reviveCanvas()
+						this.frameUpdate(rowInfo.index)
 
 						// if (handleOriginal) {
 				        //   handleOriginal();

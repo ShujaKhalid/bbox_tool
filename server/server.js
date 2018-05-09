@@ -145,7 +145,7 @@ app.post('/readdb', function(req,res) {
 
 	  // Get sent data
 	  var dbo = db.db("SST");
-	  var pic = req.body['pic']
+	  var pic = req.body['pic'];
 
       // Display the contents of the database
  	  dbo.collection("imageData").find({pic: pic}).toArray(function(err, result) {
