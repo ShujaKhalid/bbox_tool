@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import matte from './matte.jpg';
 import axios from 'axios';
-//import 'font-awesome/css/font-awesome.css';
 import "typeface-roboto";
 import './App.css';
 import Draggable from 'react-draggable'; // Both at the same time
@@ -18,12 +17,7 @@ import 'react-awesome-button/dist/themes/theme-blue.css';
 import ReactTable from "react-table";
 import 'react-table/react-table.css'
 
-// import Dropdown from 'react-dropdown'
-// import 'react-dropdown/style.css'
-
 // import data from './filenames.json';
-// const meme = requireAll(require.context('./img_vid1/', false, /\.jpg/));
-// console.log(meme)
 const allFiles = (ctx => {
 	let keys = ctx.keys();
 	let values = keys.map(ctx);
@@ -31,10 +25,12 @@ const allFiles = (ctx => {
 	return values
 })(require.context('./img_vid1/', true, /.jpg/));
 
+// Get key information
 const allKeys = (ctx => {
 	let keys = ctx.keys();
 	return keys
 })(require.context('./img_vid1/', true, /.jpg/));
+
 
 //---------------------------------------
 //The top level of the app starts here! -
@@ -46,7 +42,7 @@ class App extends Component {
 	super(props)
 	//console.log(img)
 
-	// Set the initial states of the images
+  	// Get the data from the database
 	var data = []
 
 	for (let i=0; i<allKeys.length; i++) {
@@ -55,8 +51,10 @@ class App extends Component {
 		  	status: '',
 		  	action:''
 	  }
-	  inst.filename = allKeys[i]
-	  inst.status = 'Pending...'
+
+	  // Conditions for displaying data in the table
+	  inst.filename = allKeys[i].substring(2)
+	  inst.status = 'Pending... 👀'
 	  //console.log(data)
 	  data.push(inst)
 	}
@@ -106,8 +104,96 @@ class App extends Component {
   ///
   componentDidMount() {
   	//setInterval(this.serverCheck, 5000)
-  	//setInterval(this.dbCheck, 5000)
+  	//setInterval(this.dbCheck, 10000)
+  	this.tableUpdate('all')
   }
+
+  tableUpdate = (flag) => {
+  	// Get the data from the database
+	//var data = []
+
+	if (flag=='all') {
+		for (let j=0; j<allKeys.length; j++) {
+			let currKey = allKeys[j].substring(2)
+	     	var body = {pic: currKey}
+			var result = axios({
+				method: 'post',
+				data: body,
+				url: 'http://localhost:3001/readdb',
+				config: {headers: {'Content-Type': 'json'}},
+		  	}).then(
+		  		response => {
+		  			var data = this.state.data
+		  			if (response.data.length>0) {
+		  				console.log(response)
+		  			}
+		  		
+					// Conditions for displaying data in the table
+					if (response.data[0].status == 'complete') {
+						data[j].status = 'Complete! 😊'
+					} else {
+						data[j].status = 'Pending... 👀'
+					}
+
+					this.setState({
+						data: data,
+					})
+
+			  	}
+		  	).catch(
+		  		error => {
+		  			console.log(error);
+		  		}
+		  	)
+		}
+
+
+	 } 
+
+	 // else if ('one') {
+  //    	const body = {pic: this.state.currKey}
+		// var result = axios({
+		// 	method: 'post',
+		// 	data: body,
+		// 	url: 'http://localhost:3001/readdb',
+		// 	config: {headers: {'Content-Type': 'json'}},
+	 //  	}).then(
+	 //  		response => {
+	 //  			console.log(response.data);
+		// 		for (let i=0; i<allKeys.length; i++) {
+		// 	   	   if (response.data[i] != null && response.data[i].pic != null) {
+		// 			  var inst = {
+		// 					filename: '',
+		// 				  	status: '',
+		// 				  	action:''
+		// 			  }
+
+		// 			  // Conditions for displaying data in the table
+		// 			  if (response.data[i].pic != null) {
+		// 				  inst.filename = response.data[i].pic.substring(2)
+		// 				  inst.status = 'Pending...'
+		// 				  //console.log(data)
+		// 				  data.push(inst)
+		// 			  }
+		// 		   }
+
+		// 		}
+		// 		console.log(data)
+
+		// 		this.setState({
+		// 			data: data,
+		// 		})
+
+		//   	}
+	 //  	).catch(
+	 //  		error => {
+	 //  			console.log(error);
+	 //  		}
+	 //  	)
+
+	 //} // else if ends here
+
+  } 
 
   onSelected = (rect) => {
 	if (!rect==0) { 	
@@ -115,6 +201,7 @@ class App extends Component {
 		this.state.lastClick.push('rec')  		
 	}
   };
+
 
   /// Called when the canvas is double clicked
   // - Redraws all of the vertices dynamically
@@ -370,7 +457,7 @@ class App extends Component {
   	console.log('2. Marking the files!')
   	var temp = this.state.data
 
-  	temp[this.state.ind].status = 'Complete :)'
+  	temp[this.state.ind].status = 'Complete! 😊'
 
   	this.setState({
   		data: temp
@@ -424,7 +511,7 @@ class App extends Component {
   	}).then(
   		response => {
   			let temp = []
-  			console.log(response);
+  			//console.log(response);
   			if (response.status==200) {
   				temp.push(
   					<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#3498DB"}}>
@@ -454,7 +541,7 @@ class App extends Component {
 
   // Write to the database
   dbWrite = () => {
-  	const data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
+  	const data = {pic: this.state.currKey.substring(2), status: 'complete', bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
   	console.log('1. Saving the results to the database')
   	var result = axios({
   		method: 'post',
@@ -667,16 +754,16 @@ class App extends Component {
 	    accessor: 'status',
 	    //Cell: props => <span className='number'>{props.value}</span>,
 	    getProps: (state, rowInfo, column) => {
-				    return {
-					    style: {
-					        background: rowInfo.row.status == "Pending..." ? "#EBA02B" : "#7ADD43"
-					    },
-	  			};
+	    		  return {
+				    style: {
+				        background: rowInfo.row.status == "Pending... 👀" ? "#EBA02B" : "#7ADD43"
+				    },
+  				  };
 	  		}
 	  }, {
-	    id: 'action', // Required because our accessor is not a string
-	    Header: 'Action',
-	    accessor: d => d.action // Add link to image here to toggle to it
+	    id: 'class', // Required because our accessor is not a string
+	    Header: 'Class',
+	    accessor: d => d.class // Add link to image here to toggle to it
 	  }, {
 	    Header: props => <span>Delete</span>, // Custom header components!
 	    accessor: 'filename.delete'
@@ -704,9 +791,6 @@ class App extends Component {
 				return {
 					onClick: (e, handleOriginal) => {
 				        console.log("It was in this row:", rowInfo.index);
-				        if (handleOriginal) {
-				          handleOriginal();
-				        }
 
 						// Switch to the next image
 						this.switch(true, rowInfo.index)
@@ -714,6 +798,11 @@ class App extends Component {
 						// Refresh the bbox array
 						this.refresh()
 						this.imgpic.reviveCanvas()
+
+						// if (handleOriginal) {
+				        //   handleOriginal();
+				        // }
+
 					 }
 				  }
 			   }

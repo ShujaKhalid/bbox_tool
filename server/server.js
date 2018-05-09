@@ -70,7 +70,9 @@ app.get('/checkdb', function(req, res) {
 	// console.log(res)
 	MongoClient.connect(url, function(err, db) {
 		var dbo = db.db("SST");
-		var myquery = { pic: /^./ };
+		//var myquery = { pic: /^./ };
+		var myquery = { pic: /^f/ };
+		//var myquery = { pic: null };
 
 		// Check to see if there are any errors
 	    if (err) {
@@ -118,7 +120,7 @@ app.post('/writedb', function(req,res) {
         dbo.collection("imageData").findAndModify(
         	{pic: data.pic},
         	[['_id','asc']],  // sort order
-       		{$setOnInsert: {bbox: data.bbox, mask: data.mask, class: data.class}}, 
+       		{$setOnInsert: {bbox: data.bbox, mask: data.mask, class: data.class, status: data.status}}, 
         	{new: true,	upsert: true}, 
     		function(err, res) {
 		        if (err) throw err;
@@ -132,6 +134,29 @@ app.post('/writedb', function(req,res) {
 
 	res.send('Done!');
 
+})
+
+// Write to the Mongo database
+app.post('/readdb', function(req,res) {
+
+	// MongoDB initialization
+	MongoClient.connect(url, function(err, db) {
+	  if (err) throw err;
+
+	  // Get sent data
+	  var dbo = db.db("SST");
+	  var pic = req.body['pic']
+
+      // Display the contents of the database
+ 	  dbo.collection("imageData").find({pic: pic}).toArray(function(err, result) {
+	    if (err) throw err;
+	    if (result.length > 0) console.log('Result found!');
+	    if (result.length > 0) console.log(result);
+	    res.send(result);
+		db.close();
+	  });
+
+	})
 })
 
 // Write to the Mongo database
