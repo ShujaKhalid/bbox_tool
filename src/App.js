@@ -104,15 +104,15 @@ class App extends Component {
 
   ///
   componentDidMount() {
-  	//setInterval(this.serverCheck, 10000)
-  	//setInterval(this.dbCheck, 10000)
+  	setInterval(this.serverCheck, 5000)
+  	setInterval(this.dbCheck, 5000)
   	this.tableUpdate('all')
   }
 
   tableUpdate = (flag) => {
   	// Get the data from the database
 	//var data = []
-
+	console.log('6. Updating the table...')
 	if (flag=='all') {
 		for (let j=0; j<allKeys.length; j++) {
 			let currKey = allKeys[j].substring(2)
@@ -195,6 +195,7 @@ class App extends Component {
 							data: data,
 						})
 					}
+					return Promise.resolve('Hello');
 			  	}
 		  	).catch(
 		  		error => {
@@ -520,6 +521,13 @@ class App extends Component {
 			} else {
 				window.alert('First image reached!')
 			}
+		} else if (state=='stay') {
+			// Stay on current image
+			this.setState({
+				ind: ind,
+				currImg: allFiles[ind],
+				currKey: allKeys[ind],
+			});
 		}
 
 	  return Promise.resolve('Hello');
@@ -629,7 +637,7 @@ class App extends Component {
   			//console.log(response);
   			if (response.status==200) {
   				temp.push(
-  					<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#D7F10F"}}>
+  					<div style={{fontFamily: 'Roboto', fontSize: 24+'px', backgroundColor: "#F1C40F"}}>
 					  		<b style={{color: "#21618C"}}>Database is up! \ (•◡•) / </b>
 					</div>
 		    	);
@@ -706,8 +714,8 @@ class App extends Component {
 
   // Save the results to the server
   save = (flag) => {
-	  const data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
-	  //console.log(data)
+	  var data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
+	  console.log(data)
 
 	  // Make the POST request using axios
 	  return axios({method: 'post',
@@ -757,7 +765,39 @@ class App extends Component {
 			          	})
 			        })
 			    })
-			}   	
+			} else if ('stay') {
+			   // 1. Write to the database
+			   return this.dbWrite()
+			    .then(() => {
+			      // 2. Status of the file changed to marked
+			      return this.fileMarked()
+			        .then(() => {          
+			          // 3. Switch to the next frame
+			          //return this.switch(false, null, 'stay')
+			            //.then(() => {
+			              // 4. Refresh the page          
+			          	  //return this.refresh()
+			          		//.then(() => {
+			          		  // 5. Display the result on the canvas          
+			          		  return this.dispResult()
+			          		    .then(() => {
+			          		      // Run an alert
+							      confirmAlert({
+									title: ' ۜ\(סּںסּَ` )/ۜ',
+									message: 'The data has been written to the database! \n Refresh the page to update the table',
+									buttons: [
+										{
+										  label: 'Take me back to where the fun is',
+										  onClick: () => console.log('Going back...'),
+										}
+									]
+								  });
+			          		    })
+			          		})
+			          	//})
+			        //})
+			    })
+			}	
 
 			return 'allSystemsGo'
 
@@ -851,6 +891,8 @@ class App extends Component {
 		resClass: resClass,
 	})
 
+	return Promise.resolve('Hello');
+
   }
 
   classify = (e) => {
@@ -879,7 +921,7 @@ class App extends Component {
 	    getProps: (state, rowInfo, column) => {
 	    		  return {
 				    style: {
-				        background: rowInfo.row.status == "Pending... 👀" ? "#EBA02B" : (rowInfo.row.status == "In Progress... ⏰" ? "#D7F10F" : "#0FC3F1")
+				        background: rowInfo.row.status == "Pending... 👀" ? "#EBA02B" : (rowInfo.row.status == "In Progress... ⏰" ? "#F1C40F" : "#0FC3F1")
 				    },
   				  };
 	  		}
@@ -1272,7 +1314,7 @@ class ImgPic extends Component {
   save = () => {
 	console.log('Saving!')
 	// Write/append filepath of image to a file here
-	this.props.save('next')
+	this.props.save('stay')
   };
 
  // LEGACY CODE - TO BE REMOVED
@@ -1540,7 +1582,7 @@ class ImgPic extends Component {
 			<tbody>
 			  <tr>
 				<td>
-				  <AwesomeButton type="primary" size="large" action={OnClick=>this.save('next')}>Save</AwesomeButton>
+				  <AwesomeButton type="primary" size="large" action={OnClick=>this.save('stay')}>Save</AwesomeButton>
 				</td>
 				<td>
 				  <AwesomeButton type="primary" size="large" action={OnClick=>this.refresh()}>Refresh</AwesomeButton>

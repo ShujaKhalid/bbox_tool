@@ -85,8 +85,8 @@ app.get('/checkdb', function(req, res) {
 		// Display the contents of the database
 	 	dbo.collection("imageData").find({}).toArray(function(err, result) {
 		    if (err) throw err;
-		    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-		    console.log(result)
+		    //console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		    //console.log(result)
 			db.close();
 		});
 
@@ -111,17 +111,18 @@ app.post('/writedb', function(req,res) {
 	  // Get sent data
 	  var data = req.body
 	  var dbo = db.db("SST");
+	  console.log(data)
 
 	  // Create the collection if it does not already exist
 	  dbo.createCollection("imageData", function(err, res) {
 	    if (err) throw err;
-
 	    // Insert the new image data into the database
         dbo.collection("imageData").findAndModify(
         	{pic: data.pic},
         	[['_id','asc']],  // sort order
-       		{$setOnInsert: {bbox: data.bbox, mask: data.mask, class: data.class, status: data.status}}, 
-        	{new: true,	upsert: true}, 
+       		{$set: data}, 
+        	{new: true}, 
+        	//{upsert: false}, 
     		function(err, res) {
 		        if (err) throw err;
 		        console.log("1 document inserted");
@@ -150,8 +151,8 @@ app.post('/readdb', function(req,res) {
       // Display the contents of the database
  	  dbo.collection("imageData").find({pic: pic}).toArray(function(err, result) {
 	    if (err) throw err;
-	    if (result.length > 0) console.log('Result found!');
-	    if (result.length > 0) console.log(result);
+	    //if (result.length > 0) console.log('Result found!');
+	    //if (result.length > 0) console.log(result);
 	    res.send(result);
 		db.close();
 	  });
@@ -159,30 +160,30 @@ app.post('/readdb', function(req,res) {
 	})
 })
 
-// Write to the Mongo database
-app.post('/updatedb', function(req,res) {
+// // Write to the Mongo database
+// app.post('/updatedb', function(req,res) {
 
-	// MongoDB initialization
-	MongoClient.connect(url, function(err, db) {
-	    if (err) throw err;
+// 	// MongoDB initialization
+// 	MongoClient.connect(url, function(err, db) {
+// 	    if (err) throw err;
 
-	    // Get sent data
-	    var data = req.body
-	    var dbo = db.db("SST");
-	    var myquery = {filename: ""};  
-	    var newvalues = { $set: {name: "", address: ""}}
+// 	    // Get sent data
+// 	    var data = req.body
+// 	    var dbo = db.db("SST");
+// 	    var myquery = {filename: ""};  
+// 	    var newvalues = { $set: {name: "", address: ""}}
 	 
-	    // Insert the new image data into the database
-	    dbo.collection("imageData").updateOne(data, function(err, res) {
-	      if (err) throw err;
-	      console.log("1 document inserted");
-	      db.close();
-	    });
-	}); 
+// 	    // Insert the new image data into the database
+// 	    dbo.collection("imageData").updateOne(data, function(err, res) {
+// 	      if (err) throw err;
+// 	      console.log("1 document inserted");
+// 	      db.close();
+// 	    });
+// 	}); 
 
-	res.send('Updated Collection \'imageData\' in SST!');
+// 	res.send('Updated Collection \'imageData\' in SST!');
 
-})
+// })
 
 // Write the data to a json file
 app.post('/send', function(req,res) {
