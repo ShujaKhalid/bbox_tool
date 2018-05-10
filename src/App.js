@@ -130,73 +130,71 @@ class App extends Component {
 		  			// }
 		  		
 					// --- Conditions for displaying data in the table ---
+					if (response.data.length != 0) {
+						// Complete is all of the requirements are met
+						if (response.data[0].mask[0].length!=0 && response.data[0].class[0].length!=0) {
+							data[j].status = 'Complete! 😊'
+						} else {
+							data[j].status = 'In Progress... ⏰'
+						} 
 
-					// Complete is all of the requirements are met
-					if (response.data[0].mask[0].length!=0 && response.data[0].class[0].length!=0) {
-						data[j].status = 'Complete! 😊'
-					} else {
-						data[j].status = 'In Progress... ⏰'
-					} 
-
-					// Pending status if nothing has been done
-					if (response.data[0].mask[0].length==0 && response.data[0].class[0].length==0) {
-						data[j].status = 'Pending... 👀'
-					}
-					
-					// Add class information here for the specific image
-					if (response.data[0].class[0].length!=0) {
-						//data[j].class = response.data[0].class
-						var classes = []
-						for (let i=0; i<=10; i++) {
-							if (response.data[0].class[i].length!=0) {
-								if (response.data[0].class[i]==1) {
-									classes.push(' Stapler');
-								} else if (response.data[0].class[i]==2) {
-									classes.push(' Needle');
-								} else if (response.data[0].class[i]==3) {
-									classes.push(' Suction');
-								} else if (response.data[0].class[i]==4) {
-									classes.push(' Nathanson Retractor');
-								} else if (response.data[0].class[i]==5) {
-									classes.push(' Endo-Bag');
-								} else if (response.data[0].class[i]==6) {
-									classes.push(' Suture');
-								} else if (response.data[0].class[i]==7) {
-									classes.push(' Tip');
-								} else if (response.data[0].class[i]==8) {
-									classes.push(' Shaft');
-								} else if (response.data[0].class[i]==9) {
-									classes.push(' Bougie');
-								} else if (response.data[0].class[i]==10) {
-									classes.push(' Other');
+						// Pending status if nothing has been done
+						if (response.data[0].mask[0].length==0 && response.data[0].class[0].length==0) {
+							data[j].status = 'Pending... 👀'
+						}
+						
+						// Add class information here for the specific image
+						if (response.data[0].class[0].length!=0) {
+							//data[j].class = response.data[0].class
+							var classes = []
+							for (let i=0; i<=10; i++) {
+								if (response.data[0].class[i].length!=0) {
+									if (response.data[0].class[i]==1) {
+										classes.push(' Stapler');
+									} else if (response.data[0].class[i]==2) {
+										classes.push(' Needle');
+									} else if (response.data[0].class[i]==3) {
+										classes.push(' Suction');
+									} else if (response.data[0].class[i]==4) {
+										classes.push(' Nathanson Retractor');
+									} else if (response.data[0].class[i]==5) {
+										classes.push(' Endo-Bag');
+									} else if (response.data[0].class[i]==6) {
+										classes.push(' Suture');
+									} else if (response.data[0].class[i]==7) {
+										classes.push(' Tip');
+									} else if (response.data[0].class[i]==8) {
+										classes.push(' Shaft');
+									} else if (response.data[0].class[i]==9) {
+										classes.push(' Bougie');
+									} else if (response.data[0].class[i]==10) {
+										classes.push(' Other');
+									}
+								} else {
+									break;
 								}
-								 
-							} else {
-								break;
 							}
-							
+							data[j].class = classes.toString()
 						}
-						data[j].class = classes.toString()
-					}
-					
-					// Add class information here for the specific image
-					if (response.data[0].mask[0].length!=0) {
-						var qty = 0
-						for (let i=0; i<10; i++) {
-							if (response.data[0].mask[i].length!=0) {
-								qty += 1; 
-							} else {
-								break;
+						
+						// Add class information here for the specific image
+						if (response.data[0].mask[0].length!=0) {
+							var qty = 0
+							for (let i=0; i<10; i++) {
+								if (response.data[0].mask[i].length!=0) {
+									qty += 1; 
+								} else {
+									break;
+								}
+								
 							}
-							
+							data[j].mask = qty
 						}
-						data[j].mask = qty
+
+						this.setState({
+							data: data,
+						})
 					}
-
-					this.setState({
-						data: data,
-					})
-
 			  	}
 		  	).catch(
 		  		error => {
@@ -211,7 +209,7 @@ class App extends Component {
 
 
   frameUpdate = (key) => {
-
+  		console.log(this.props.ind)
 		let currKey = allKeys[key].substring(2)
      	var body = {pic: currKey}
 		var result = axios({
@@ -222,8 +220,7 @@ class App extends Component {
 	  	}).then(
 		  		response => {
 		  			var data = this.state.data
-		  			console.log(response.data[0].mask)
-		  			console.log(response.data[0].mask[0])
+
 		  			// Calculate the total no. of masks
 					if (response.data[0].mask[0].length!=0) {
 						var qty = 0
@@ -466,7 +463,7 @@ class App extends Component {
   next = () => {
 	// Check to see if the class information has been 
 	// entered
-	return this.save()  
+	return this.save('next')  
 
   }
 
@@ -479,36 +476,49 @@ class App extends Component {
 		currImg: allFiles[this.state.ind-1],
 		currKey: allKeys[this.state.ind-1],
 	  });
-	  console.log('Previous Image')   
+	  console.log('Previous Image')
 	} else {
 	  window.alert('First image reached!')
 	}
+	return this.save('prev')
   };
 
-  switch = (flag, ind) => {
+  switch = (flag, ind, state) => {
 		console.log('3. Switching to the next screen!')
 
-		// Switching to another image right away
-		if (flag) {
-		// Check to see if you can move to the next image
-			this.setState({
-				ind: ind,
-				currImg: allFiles[ind],
-				currKey: allKeys[ind],
-			});
-		// Checking to see if some conditions are met (edge cases)
-		} else {
-			if (this.state.ind+1<allFiles.length) {
+		// 'Forward' or 'Back'?
+		if (state=='next') {
+			// Switching to another image right away
+			if (flag) {
+			    // Stay on current image
 				this.setState({
-					ind: this.state.ind+1,
-					currImg: allFiles[this.state.ind+1],
-					currKey: allKeys[this.state.ind+1],
+					ind: ind,
+					currImg: allFiles[ind],
+					currKey: allKeys[ind],
 				});
-				//console.log(allFiles[this.state.ind])
-				//console.log(allKeys[this.state.ind])
-				//console.log('Next Image')      
+			// Checking to see if some conditions are met (edge cases)
 			} else {
-				window.alert('Last image reached!')
+				// Move to the net image if possible
+				if (this.state.ind+1<allFiles.length) {
+					this.setState({
+						ind: this.state.ind+1,
+						currImg: allFiles[this.state.ind+1],
+						currKey: allKeys[this.state.ind+1],
+					});  
+				} else {
+					window.alert('Last image reached!')
+				}
+			}
+		} else if (state=='prev') {
+			// Move to the net image if possible
+			if (this.state.ind-1>=0) {
+				this.setState({
+					ind: this.state.ind-1,
+					currImg: allFiles[this.state.ind-1],
+					currKey: allKeys[this.state.ind-1],
+				});  
+			} else {
+				window.alert('First image reached!')
 			}
 		}
 
@@ -549,7 +559,20 @@ class App extends Component {
   	console.log('2. Marking the files!')
   	var temp = this.state.data
 
-  	temp[this.state.ind].status = 'Complete! 😊'
+  	//temp[this.state.ind].status = 'Complete! 😊'
+  	//console.log(temp[this.state.ind])
+
+	// Complete is all of the requirements are met
+	if (temp[this.state.ind].mask!=0 && temp[this.state.ind].class!="") {
+		temp[this.state.ind].status = 'Complete! 😊'
+	} else {
+		temp[this.state.ind].status = 'In Progress... ⏰'
+	} 
+
+	// Pending status if nothing has been done
+	if (temp[this.state.ind].mask==0 && temp[this.state.ind].class=="") {
+		temp[this.state.ind].status = 'Pending... 👀'
+	}
 
   	this.setState({
   		data: temp
@@ -642,7 +665,7 @@ class App extends Component {
   		config: {headers: {'Content-Type': 'json'}}
   	}).then(
   		response => {
-  			console.log(response);
+  			//console.log(response);
   			return Promise.resolve('Hello');
 	  	}
   	).catch(
@@ -682,7 +705,7 @@ class App extends Component {
   }
 
   // Save the results to the server
-  save = () => {
+  save = (flag) => {
 	  const data = {pic: this.state.currKey, bbox: this.state.bboxes, mask: this.state.defaultPosition, class: this.state.segClass}
 	  //console.log(data)
 
@@ -696,24 +719,45 @@ class App extends Component {
 		   // If method is successful, complete a bunch of 
 		   // sequential tasks by setting them up as a promise chain
 
-		   // 1. Write to the database
-		   return this.dbWrite()
-		    .then(() => {
-		      // 2. Status of the file changed to marked
-		      return this.fileMarked()
-		        .then(() => {          
-		          // 3. Switch to the next frame
-		          return this.switch(false, null)
-		            .then(() => {
-		              // 4. Refresh the page          
-		          	  return this.refresh()
-		          		.then(() => {
-		          		  // 5. Display the result on the canvas          
-		          		  return this.dispResult()
-		          		})
-		          	})
-		        })
-		    })		   	
+		   if (flag=='next') {
+			   // 1. Write to the database
+			   return this.dbWrite()
+			    .then(() => {
+			      // 2. Status of the file changed to marked
+			      return this.fileMarked()
+			        .then(() => {          
+			          // 3. Switch to the next frame
+			          return this.switch(false, null, 'next')
+			            .then(() => {
+			              // 4. Refresh the page          
+			          	  return this.refresh()
+			          		.then(() => {
+			          		  // 5. Display the result on the canvas          
+			          		  return this.dispResult()
+			          		})
+			          	})
+			        })
+			    })
+			} else if (flag=='prev') {
+			   // 1. Write to the database
+			   return this.dbWrite()
+			    .then(() => {
+			      // 2. Status of the file changed to marked
+			      return this.fileMarked()
+			        .then(() => {          
+			          // 3. Switch to the next frame
+			          return this.switch(false, null, 'prev')
+			            .then(() => {
+			              // 4. Refresh the page          
+			          	  return this.refresh()
+			          		.then(() => {
+			          		  // 5. Display the result on the canvas          
+			          		  return this.dispResult()
+			          		})
+			          	})
+			        })
+			    })
+			}   	
 
 			return 'allSystemsGo'
 
@@ -865,7 +909,7 @@ class App extends Component {
 		  <h1 style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>Segmentation Tool</h1>
 		</header>
 		<div style={{background: `url(${matte})`}}>
-			<ImgPic checks={this.checks} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="1280" height="720" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP} ref={(cd) => {this.imgpic = cd}}>
+			<ImgPic checks={this.checks} ind={this.state.ind} frameUpdate={this.frameUpdate} switch={this.switch} maskInd={this.state.maskInd} onEnterDown={this.onEnterDown} bb={this.state.bboxes} denote={this.denote} dispResult={this.dispResult} polyP={this.state.defaultPosition} total={allFiles.length} current={this.state.ind+1} width="1280" height="720" frame={this.state.currImg} onSelected={this.onSelected} next={this.next} prev={this.prev} refresh={this.refresh} undo={this.undo} save={this.save} onMaskP={this.onMaskP} ref={(cd) => {this.imgpic = cd}}>
 			  {this.state.children}
 			</ImgPic>
 			<SegTable resCoords={this.state.resCoords} resClass={this.state.resClass} header={this.state.header}>
@@ -878,7 +922,7 @@ class App extends Component {
 					onClick: (e, handleOriginal) => {
 
 						// Switch to the next image
-						this.switch(true, rowInfo.index)
+						this.switch(true, rowInfo.index, 'next')
 						
 						// Refresh the bbox array
 						this.refresh()
@@ -1055,7 +1099,7 @@ class ImgPic extends Component {
 	this.base_image.src = this.props.frame
 	this.base_image.onload = () => {
 	  this.ctx.drawImage(this.base_image,0,0)
-	  console.log('Inside reload canvas!') 
+	  //console.log('Inside reload canvas!') 
 	  //console.log(this.props.polyP)
 	  for (let j=0; j<this.props.polyP.length; j++) {
 		  this.ctx.beginPath();
@@ -1228,35 +1272,94 @@ class ImgPic extends Component {
   save = () => {
 	console.log('Saving!')
 	// Write/append filepath of image to a file here
-	this.props.save()
+	this.props.save('next')
   };
+
+ // LEGACY CODE - TO BE REMOVED
+ //  prev = () => {
+	// // Write/append filepath of image to a file here
+	// this.props.prev()
+	// // Refresh the bbox array
+	// this.props.refresh()
+	// // Update the canvas
+	// this.isDirty = true
+	// requestAnimationFrame(this.reviveCanvas) 
+ //  };
 
   prev = () => {
-	// Write/append filepath of image to a file here
-	this.props.prev()
-	// Refresh the bbox array
-	this.props.refresh()
-	// Update the canvas
-	this.isDirty = true
-	requestAnimationFrame(this.reviveCanvas) 
-  };
+		var status = this.props.checks() // Checks are currently disabled
+		console.log('status: '+status)
+		if (status=='keepMoving') {
+		  this.props.prev()
+		  .then((resVar) => {
+			  if (resVar==='allSystemsGo') {
+				// Refresh the bbox array
+				this.props.refresh()
+
+				// Update the canvas
+				this.isDirty = true
+				requestAnimationFrame(this.reviveCanvas) 	
+			  } else if (resVar==='bboxMiss') {
+				confirmAlert({
+					title: 'Please specify correct no. of bounding boxes',
+					message: '',
+					buttons: [
+						{
+						  label: 'Go Back',
+						  onClick: () => console.log('Going back...'),
+						}
+					]
+				});
+			  } else if (status==='classMiss') {
+				confirmAlert({
+					title: 'Please specify reqd. class information',
+					message: '',
+					buttons: [
+						{
+						  label: 'Go Back',
+						  onClick: () => console.log('Going back...'),
+						}
+					]
+				});
+			} else if (resVar==='mayDay') {
+				console.log('mayDay! mayDay!')
+			}
+			  
+			  this.props.frameUpdate(this.props.ind)
+
+		    })
+	    } else if (status==='classMiss') {
+			confirmAlert({
+				title: 'Please specify reqd. class information',
+				message: '',
+				buttons: [
+					{
+					  label: 'Go Back',
+					  onClick: () => console.log('Going back...'),
+					}
+				]
+			});
+		};
+    
+    }
 
   next = () => {
-	confirmAlert({
-	  title: 'Switch to next frame?',
-	  message: 'Data will be written to server',
-	  buttons: [
-		{
-		  label: 'Yes',
-		  onClick: () => {
-   			  var status = this.props.checks()
+	// confirmAlert({
+	//   title: 'Switch to next frame?',
+	//   message: 'Data will be written to server',
+	//   buttons: [
+	// 	{
+	// 	  label: 'Yes',
+	// 	  onClick: () => {
+   			  var status = this.props.checks() // Checks are currently disabled
    			  console.log('status: '+status)
    			  if (status=='keepMoving') {
 				  this.props.next()
 				  .then((resVar) => {
 					  if (resVar==='allSystemsGo') {
 						// Refresh the bbox array
-						// this.props.refresh()
+						this.props.refresh()
+
 						// Update the canvas
 						this.isDirty = true
 						requestAnimationFrame(this.reviveCanvas) 	
@@ -1284,29 +1387,34 @@ class ImgPic extends Component {
 						});
 					} else if (resVar==='mayDay') {
 						console.log('mayDay! mayDay!')
-					  }
+					}
+					  
+					  this.props.frameUpdate(this.props.ind)
+
 				    })
-				} else if (status==='classMiss') {
-						confirmAlert({
-							title: 'Please specify reqd. class information',
-							message: '',
-							buttons: [
-								{
-								  label: 'Go Back',
-								  onClick: () => console.log('Going back...'),
-								}
-							]
-						});
-					};
+			} else if (status==='classMiss') {
+					confirmAlert({
+						title: 'Please specify reqd. class information',
+						message: '',
+						buttons: [
+							{
+							  label: 'Go Back',
+							  onClick: () => console.log('Going back...'),
+							}
+						]
+					});
+				};
+		    
 		    }
-		},
-		{
-		  label: 'No',
-		  onClick: () => console.log('Click No')
-		}
-	  ]
-	});
-  };
+
+	// 	},
+	// 	{
+	// 	  label: 'No',
+	// 	  onClick: () => console.log('Click No')
+	// 	}
+	//   ]
+	// });
+ //  };
 
   refresh = () => {
 	// Refresh the bbox array
@@ -1432,7 +1540,7 @@ class ImgPic extends Component {
 			<tbody>
 			  <tr>
 				<td>
-				  <AwesomeButton type="primary" size="large" action={OnClick=>this.save()}>Save</AwesomeButton>
+				  <AwesomeButton type="primary" size="large" action={OnClick=>this.save('next')}>Save</AwesomeButton>
 				</td>
 				<td>
 				  <AwesomeButton type="primary" size="large" action={OnClick=>this.refresh()}>Refresh</AwesomeButton>
