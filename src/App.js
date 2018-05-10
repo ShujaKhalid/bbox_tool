@@ -205,7 +205,6 @@ class App extends Component {
 		  	)
 		}
 
-
 	 } 
 
   } 
@@ -254,7 +253,30 @@ class App extends Component {
 						}
 					  }
 					}
-					this.imgpic.updateCanvas()
+					
+					var classes = []
+					// Extract class information here
+					for (let i=0; i<response.data[0].class.length; i++) {
+						if (response.data[0].class[i].length!=0) {
+							classes.push(response.data[0].class[i])
+						} else {
+							break;
+						}					
+					}
+
+					// Previously selected items from the drop down list are 
+					// selected
+					console.log(classes)
+					for (let i=0; i<classes.length; i++) {
+						var select = document.getElementById(i);
+						select[classes[i]].selected = true
+					}
+
+					// Update the canvas
+					this.imgpic.reviveCanvas()
+					//this.imgpic.reloadCanvas()
+
+
 			  	}
 		  	).catch(
 		  		error => {
@@ -671,15 +693,22 @@ class App extends Component {
 		   config: {headers: {'Content-Type': 'json'}}
 		   }).then(response => {
 
-		   // If method is successful, complete a bunch of tasks
+		   // If method is successful, complete a bunch of 
+		   // sequential tasks by setting them up as a promise chain
+
+		   // 1. Write to the database
 		   return this.dbWrite()
 		    .then(() => {
+		      // 2. Status of the file changed to marked
 		      return this.fileMarked()
 		        .then(() => {          
+		          // 3. Switch to the next frame
 		          return this.switch(false, null)
-		            .then(() => {          
+		            .then(() => {
+		              // 4. Refresh the page          
 		          	  return this.refresh()
-		          		.then(() => {          
+		          		.then(() => {
+		          		  // 5. Display the result on the canvas          
 		          		  return this.dispResult()
 		          		})
 		          	})
@@ -754,7 +783,7 @@ class App extends Component {
 			var hgt = (16+(19)*this.state.defaultPosition[j].length).toString() + "px" // very crude approximation 
 			resClass.push(
 			  <tr bgcolor={clr} height={hgt}>	
-				<select background="rgba(0,0,0,0.3)" className={j} onChange={this.classify}>
+				<select id={j} background="rgba(0,0,0,0.3)" className={j} onChange={this.classify}>
 				  <option value="0"> - </option>
 				  <option value="1"> Stapler </option>
 				  <option value="2"> Needle </option>
@@ -853,7 +882,6 @@ class App extends Component {
 						
 						// Refresh the bbox array
 						this.refresh()
-						this.imgpic.reviveCanvas()
 						this.frameUpdate(rowInfo.index)
 
 						// if (handleOriginal) {
@@ -1027,7 +1055,76 @@ class ImgPic extends Component {
 	this.base_image.src = this.props.frame
 	this.base_image.onload = () => {
 	  this.ctx.drawImage(this.base_image,0,0)
+	  console.log('Inside reload canvas!') 
+	  //console.log(this.props.polyP)
+	  for (let j=0; j<this.props.polyP.length; j++) {
+		  this.ctx.beginPath();
+
+		  for (let i=0; i<this.props.polyP[j].length; i++) {
+			this.ctx.lineTo(this.props.polyP[j][i].x, this.props.polyP[j][i].y)
+		  }
+
+		  // To avoid getting into an infinite loop when the undo button
+		  // is pressed      
+		  if (this.props.polyP[j][0]!==undefined) {
+			this.ctx.lineTo(this.props.polyP[j][0].x, this.props.polyP[j][0].y)
+		  }
+		  
+		  if (j==0) {
+			this.ctx.strokeStyle = "#85C1E9";
+			this.ctx.fillStyle = "rgba(133,193,233,0.5)";
+		  } else if (j==1) {
+			this.ctx.strokeStyle = "#99A3A4";
+			this.ctx.fillStyle = "rgba(153,163,164,0.5)";
+		  } else if (j==2) {
+			this.ctx.strokeStyle = "#A569BD";
+			this.ctx.fillStyle = "rgba(187,143,206,0.5)";
+		  } else if (j==3) {
+			this.ctx.strokeStyle = "##F1948A";
+			this.ctx.fillStyle = "rgba(22,160,133,0.5)";
+	      }
+
+		  this.ctx.stroke();
+		  this.ctx.fill()
+		  this.ctx.closePath()
+	  }
 	}   
+  }
+
+  reloadCanvas = () => {
+  	  console.log('Inside reload canvas!') 
+	  //console.log(this.props.polyP)
+	  for (let j=0; j<this.props.polyP.length; j++) {
+		  this.ctx.beginPath();
+
+		  for (let i=0; i<this.props.polyP[j].length; i++) {
+			this.ctx.lineTo(this.props.polyP[j][i].x, this.props.polyP[j][i].y)
+		  }
+
+		  // To avoid getting into an infinite loop when the undo button
+		  // is pressed      
+		  if (this.props.polyP[j][0]!==undefined) {
+			this.ctx.lineTo(this.props.polyP[j][0].x, this.props.polyP[j][0].y)
+		  }
+		  
+		  if (j==0) {
+			this.ctx.strokeStyle = "#85C1E9";
+			this.ctx.fillStyle = "rgba(133,193,233,0.5)";
+		  } else if (j==1) {
+			this.ctx.strokeStyle = "#99A3A4";
+			this.ctx.fillStyle = "rgba(153,163,164,0.5)";
+		  } else if (j==2) {
+			this.ctx.strokeStyle = "#A569BD";
+			this.ctx.fillStyle = "rgba(187,143,206,0.5)";
+		  } else if (j==3) {
+			this.ctx.strokeStyle = "##F1948A";
+			this.ctx.fillStyle = "rgba(22,160,133,0.5)";
+	      }
+
+		  this.ctx.stroke();
+		  this.ctx.fill()
+		  this.ctx.closePath()
+	  }
   }
 
   updateCanvas = () => {
