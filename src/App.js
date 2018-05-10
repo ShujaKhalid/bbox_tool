@@ -219,60 +219,60 @@ class App extends Component {
 			url: 'http://localhost:3001/readdb',
 			config: {headers: {'Content-Type': 'json'}},
 	  	}).then(
-		  		response => {
-		  			var data = this.state.data
+	  		response => {
+	  			var data = this.state.data
 
-		  			// Calculate the total no. of masks
-					if (response.data[0].mask[0].length!=0) {
-						var qty = 0
-						for (let i=0; i<10; i++) {
-							if (response.data[0].mask[i].length!=0) {
-								qty += 1; 
-							} else {
-								break;
-							}
-							
-						}
-					}
-
-					// Extract mask information here
-					for (let j=0; j<qty; j++) {
-					  this.setState({
-					  	globalKey: j,
-					  })
-					  for (let i=0; i<response.data[0].mask[j].length; i++) {
-					  	this.setState({
-					  		localKey: i-1,
-					  	})
-						if (response.data[0].mask[j].length!=0) {
-							this.onMaskP(response.data[0].mask[j][i]);
+	  			// Calculate the total no. of masks
+				if (response.data[0].mask[0].length!=0) {
+					var qty = 0
+					for (let i=0; i<10; i++) {
+						if (response.data[0].mask[i].length!=0) {
+							qty += 1; 
 						} else {
 							break;
 						}
-					  }
+						
 					}
-					
-					var classes = []
-					// Extract class information here
-					for (let i=0; i<response.data[0].class.length; i++) {
-						if (response.data[0].class[i].length!=0) {
-							classes.push(response.data[0].class[i])
-						} else {
-							break;
-						}					
-					}
+				}
 
-					// Previously selected items from the drop down list are 
-					// selected
-					console.log(classes)
-					for (let i=0; i<classes.length; i++) {
-						var select = document.getElementById(i);
-						select[classes[i]].selected = true
+				// Extract mask information here
+				for (let j=0; j<qty; j++) {
+				  this.setState({
+				  	globalKey: j,
+				  })
+				  for (let i=0; i<response.data[0].mask[j].length; i++) {
+				  	this.setState({
+				  		localKey: i-1,
+				  	})
+					if (response.data[0].mask[j].length!=0) {
+						this.onMaskP(response.data[0].mask[j][i]);
+					} else {
+						break;
 					}
+				  }
+				}
+				
+				var classes = []
+				// Extract class information here
+				for (let i=0; i<response.data[0].class.length; i++) {
+					if (response.data[0].class[i].length!=0) {
+						classes.push(response.data[0].class[i])
+					} else {
+						break;
+					}					
+				}
 
-					// Update the canvas
-					this.imgpic.reviveCanvas()
-					//this.imgpic.reloadCanvas()
+				// Previously selected items from the drop down list are 
+				// selected
+				console.log(classes)
+				for (let i=0; i<classes.length; i++) {
+					var select = document.getElementById(i);
+					select[classes[i]].selected = true
+				}
+
+				// Update the canvas
+				this.imgpic.reviveCanvas()
+				//this.imgpic.reloadCanvas()
 
 
 			  	}
@@ -464,25 +464,48 @@ class App extends Component {
   next = () => {
 	// Check to see if the class information has been 
 	// entered
-	return this.save('next')  
+	//return this.save('next')
+
+	// Switch to the next image
+	this.switch(true, this.state.ind+1, 'next')
+	
+	// Refresh the bbox array
+	this.refresh()
+	//this.frameUpdate(this.state.ind+1)
+
+	return Promise.resolve('Refresh Complete!')
 
   }
 
   // Move to the previous image (data will have to be redrawn)
   // TODO - Use unique tag to reload data
+ //  prev = () => {
+	// if (this.state.ind-1>=0) {
+	//   this.setState({
+	// 	ind: this.state.ind-1,
+	// 	currImg: allFiles[this.state.ind-1],
+	// 	currKey: allKeys[this.state.ind-1],
+	//   });
+	//   console.log('Previous Image')
+	// } else {
+	//   window.alert('First image reached!')
+	// }
+	// return this.save('prev')
+ //  };
+
+  // prev
   prev = () => {
-	if (this.state.ind-1>=0) {
-	  this.setState({
-		ind: this.state.ind-1,
-		currImg: allFiles[this.state.ind-1],
-		currKey: allKeys[this.state.ind-1],
-	  });
-	  console.log('Previous Image')
-	} else {
-	  window.alert('First image reached!')
-	}
-	return this.save('prev')
-  };
+  	// Switch to the next image
+	this.switch(true, this.state.ind-1, 'prev')
+	
+	// Refresh the bbox array
+	this.refresh()
+	//this.frameUpdate(this.state.ind-1)
+
+    return Promise.resolve('Hello');
+
+  }
+
 
   switch = (flag, ind, state) => {
 		console.log('3. Switching to the next screen!')
@@ -512,6 +535,7 @@ class App extends Component {
 			}
 		} else if (state=='prev') {
 			// Move to the net image if possible
+			console.log(this.state.ind)
 			if (this.state.ind-1>=0) {
 				this.setState({
 					ind: this.state.ind-1,
@@ -1317,7 +1341,7 @@ class ImgPic extends Component {
 	this.props.save('stay')
   };
 
- // LEGACY CODE - TO BE REMOVED
+// LEGACY CODE - TO BE REMOVED
  //  prev = () => {
 	// // Write/append filepath of image to a file here
 	// this.props.prev()
@@ -1434,7 +1458,7 @@ class ImgPic extends Component {
 					  this.props.frameUpdate(this.props.ind)
 
 				    })
-			} else if (status==='classMiss') {
+			  } else if (status==='classMiss') {
 					confirmAlert({
 						title: 'Please specify reqd. class information',
 						message: '',
