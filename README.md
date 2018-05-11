@@ -1,5 +1,5 @@
 # SegMe
-> SegMe is an annotation tool that can be used to create segmentation masks.
+> SegMe is an annotation tool that can be used to create segmentation masks and capture the results in a convenient .json file.
 
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
@@ -15,7 +15,7 @@ SegMe is a tool that I developed for extracting segmented masks from images. My 
 OS X & Linux:
 
 ```sh
-cd #WORKING_DIRECTORY
+cd $WORKING_DIRECTORY
 git clone https://github.com/ShujaKhalid/bbox_tool
 cd bbox_tool
 npm install
@@ -75,6 +75,8 @@ Note: If at any time the annotations are not visible upon clicking a row in the 
 
 Note: The code as it currently stands has been structured for use with niche bio-medical data  
 
+11.) 
+
 ## Release History
 
 * 0.0.1
@@ -90,7 +92,7 @@ Distributed under the MIT license. See ``LICENSE`` for more information.
 
 ## Contributing
 
-1. Fork it (<https://github.com/yourname/yourproject/fork>)
+1. Fork it (<https://github.com/ShujaKhalid/bbox-tool/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
