@@ -524,15 +524,15 @@ class App extends Component {
 			if (flag) {
 			    // Stay on current image
 				// Move to the net image if possible
-				if (this.state.ind+1<allFiles.length) {
+				if (ind<allFiles.length) {
 					this.setState({
-						ind: this.state.ind+1,
-						currImg: allFiles[this.state.ind+1],
-						currKey: allKeys[this.state.ind+1],
+						ind: ind,
+						currImg: allFiles[ind],
+						currKey: allKeys[ind],
 					});
-					toast("Marching forward!", { autoClose: 3000 }) 
+					toast.info("Marching forward!", { autoClose: 1500 }) 
 				} else {
-					toast("Last Image Reached!", { autoClose: 3000 })
+					toast.info("Last Image Reached!", { autoClose: 1500 })
 				}
 			// Checking to see if some conditions are met (edge cases)
 			} else {
@@ -543,9 +543,9 @@ class App extends Component {
 						currImg: allFiles[this.state.ind+1],
 						currKey: allKeys[this.state.ind+1],
 					});
-					toast("Marching forward!", { autoClose: 3000 }) 
+					toast.info("Marching forward!", { autoClose: 1500 }) 
 				} else {
-					toast("Last Image Reached!", { autoClose: 3000 })
+					toast.info("Last Image Reached!", { autoClose: 1500 })
 				}
 			}
 		} else if (state=='prev') {
@@ -557,9 +557,9 @@ class App extends Component {
 					currImg: allFiles[this.state.ind-1],
 					currKey: allKeys[this.state.ind-1],
 				});
-				toast("Heading Back!", { autoClose: 3000 }) 
+				toast.info("Heading Back!", { autoClose: 1500 }) 
 			} else {
-				toast("First Image Reached!", { autoClose: 3000 })
+				toast.info("First Image Reached!", { autoClose: 1500 })
 			}
 		} else if (state=='stay') {
 			// Stay on current image
@@ -770,11 +770,11 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
-			      toast("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 3000 })
+			      toast.success("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 1000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
 			        .then(() => {  
-			          toast("Refresh page to view modifications...", { autoClose: 3000 }) 
+			          toast.info("Refresh page to view modifications...", { autoClose: 2000 }) 
 			          // 3. Switch to the next frame
 			          return this.switch(false, null, 'next')
 			            .then(() => {
@@ -791,11 +791,11 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
-   				  toast("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 3000 })
+   				  toast.sucess("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 1000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
 			        .then(() => {    
-			          toast("Refresh page to view modifications...", { autoClose: 3000 })  
+			          toast.info("Refresh page to view modifications...", { autoClose: 2000 })  
 			          // 3. Switch to the next frame
 			          return this.switch(false, null, 'prev')
 			            .then(() => {
@@ -813,11 +813,11 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
-			      toast("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 3000 })
+			      toast.success("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 1000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
 			        .then(() => {
-			        toast("Refresh page to view modifications...", { autoClose: 3000 })     
+			        toast.info("Refresh page to view modifications...", { autoClose: 2000 })     
 			          // 3. Switch to the next frame
 			          //return this.switch(false, null, 'stay')
 			            //.then(() => {
@@ -991,7 +991,7 @@ class App extends Component {
 
 	return (
 	  <div className="App">
-	    <ToastContainer autoClose={8000} />
+	    <ToastContainer className='toast-container' toastClassName="dark-toast" />
   	  	{this.state.serverState}
   	    {this.state.dbState}
 		<header style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>
@@ -1016,7 +1016,7 @@ class App extends Component {
 						// Refresh the bbox array
 						this.refresh()
 						this.frameUpdate(rowInfo.index)
-						toast("Displaying older annotations...", { autoClose: 5000 })
+						toast.warn("Displaying older annotations...", { autoClose: 2000 })
 						// if (handleOriginal) {
 				        //   handleOriginal();
 				        // }
@@ -1055,7 +1055,6 @@ class SegTable extends Component {
 
 		const defaultOption = options[0]
 
-		//console.log('Inside Segtable')
 		return (
 			<div className="SegTable">
 			  <table border="1" align='center'>
@@ -1512,14 +1511,14 @@ class ImgPic extends Component {
 	this.isDirty = true
 	this.isDragPoly = true
 	this.reviveCanvas()
-	toast("  ۜ\(סּںסּَ` )/ۜ Page Refreshed!", { autoClose: 5000 })
+	toast.success("  ۜ\(סּںסּَ` )/ۜ Page Refreshed!", { autoClose: 1500 })
 	return Promise.resolve('Refresh Complete!');
 	//requestAnimationFrame(this.updateCanvas) 
   };
 
   undo = () => {
 	console.log('Undo!')
-	toast("  ۜ\(סּںסּَ` )/ۜ Undo Successful!", { autoClose: 5000 })
+	toast.success("  ۜ\(סּںסּَ` )/ۜ Undo Successful!", { autoClose: 1500 })
 	// Refresh the bbox array
 	this.props.undo()
 	// Update the canvas
