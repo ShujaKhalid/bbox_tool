@@ -6,13 +6,13 @@
 
 SegMe is a tool that I developed for extracting segmented masks from images. My rationale was to create a robust tool that could quickly create masks that can be used to train machine learning models. Doing so gave me some experience using React and allowed me to create data in a format that can be fed into existing Mask-RCNN implementations with some modest tweaking. 
 
+### User Interface
+
 ![](demo_imgs/1.png)
 
-User Interface
+### Canvas with Annotations
 
 ![](demo_imgs/2.png)
-
-Masks drawn on canvas
 
 ## Installation
 
