@@ -105,8 +105,8 @@ class App extends Component {
 
   ///
   componentDidMount() {
-  	//setInterval(this.serverCheck, 5000)
-  	//setInterval(this.dbCheck, 5000)
+  	setInterval(this.serverCheck, 5000)
+  	setInterval(this.dbCheck, 5000)
   	this.tableUpdate('all')
   }
 
@@ -530,9 +530,9 @@ class App extends Component {
 						currImg: allFiles[ind],
 						currKey: allKeys[ind],
 					});
-					toast.info("Marching forward!", { autoClose: 1500 }) 
+					toast.info("Marching forward!", { autoClose: 2500 }) 
 				} else {
-					toast.info("Last Image Reached!", { autoClose: 1500 })
+					toast.info("Last Image Reached!", { autoClose: 2500 })
 				}
 			// Checking to see if some conditions are met (edge cases)
 			} else {
@@ -543,9 +543,9 @@ class App extends Component {
 						currImg: allFiles[this.state.ind+1],
 						currKey: allKeys[this.state.ind+1],
 					});
-					toast.info("Marching forward!", { autoClose: 1500 }) 
+					toast.info("Marching forward!", { autoClose: 2500 }) 
 				} else {
-					toast.info("Last Image Reached!", { autoClose: 1500 })
+					toast.info("Last Image Reached!", { autoClose: 2500 })
 				}
 			}
 		} else if (state=='prev') {
@@ -557,9 +557,9 @@ class App extends Component {
 					currImg: allFiles[this.state.ind-1],
 					currKey: allKeys[this.state.ind-1],
 				});
-				toast.info("Heading Back!", { autoClose: 1500 }) 
+				toast.info("Heading Back!", { autoClose: 2500 }) 
 			} else {
-				toast.info("First Image Reached!", { autoClose: 1500 })
+				toast.info("First Image Reached!", { autoClose: 2500 })
 			}
 		} else if (state=='stay') {
 			// Stay on current image
@@ -598,7 +598,7 @@ class App extends Component {
 		};
 
 		console.log('checks passed!')
-		//toast("All back-end checks passed!", { autoClose: 1000 })
+		//toast("All back-end checks passed!", { autoClose: 2000 })
 		return 'keepMoving'
   }
 
@@ -770,7 +770,7 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
-			      toast.success("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 1000 })
+			      toast.success("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 2000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
 			        .then(() => {  
@@ -791,7 +791,7 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
-   				  toast.sucess("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 1000 })
+   				  toast.sucess("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 2000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
 			        .then(() => {    
@@ -813,7 +813,7 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
-			      toast.success("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 1000 })
+			      toast.success("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 2000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
 			        .then(() => {
@@ -897,7 +897,11 @@ class App extends Component {
 		} else if (j==2) {
 			clr="#A569BD"
 		} else if (j==3) {
-			clr="#F1948A"
+			clr="#16A085"
+		} else if (j==4) {
+			clr="#F6035C"
+		} else if (j==5) {
+			clr="#F8F60A"
 		}
 
 		for (var i=0; i<this.state.defaultPosition[j].length; i+=1) {
@@ -1212,8 +1216,14 @@ class ImgPic extends Component {
 			this.ctx.strokeStyle = "#A569BD";
 			this.ctx.fillStyle = "rgba(187,143,206,0.5)";
 		  } else if (j==3) {
-			this.ctx.strokeStyle = "##F1948A";
+			this.ctx.strokeStyle = "#16A085";
 			this.ctx.fillStyle = "rgba(22,160,133,0.5)";
+	      } else if (j==4) {
+			this.ctx.strokeStyle = "#F6035C";
+			this.ctx.fillStyle = "rgba(248,10,131,0.5)";
+	      } else if (j==5) {
+			this.ctx.strokeStyle = "#F8F60A";
+			this.ctx.fillStyle = "rgba(248,246,10,0.5)";
 	      }
 
 		  this.ctx.stroke();
@@ -1249,8 +1259,14 @@ class ImgPic extends Component {
 			this.ctx.strokeStyle = "#A569BD";
 			this.ctx.fillStyle = "rgba(187,143,206,0.5)";
 		  } else if (j==3) {
-			this.ctx.strokeStyle = "##F1948A";
+			this.ctx.strokeStyle = "#16A085";
 			this.ctx.fillStyle = "rgba(22,160,133,0.5)";
+	      } else if (j==4) {
+			this.ctx.strokeStyle = "#F6035C";
+			this.ctx.fillStyle = "rgba(248,10,131,0.5)";
+	      } else if (j==5) {
+			this.ctx.strokeStyle = "#F8F60A";
+			this.ctx.fillStyle = "rgba(248,246,10,0.5)";
 	      }
 
 		  this.ctx.stroke();
@@ -1324,8 +1340,14 @@ class ImgPic extends Component {
 			this.ctx.strokeStyle = "#A569BD";
 			this.ctx.fillStyle = "rgba(187,143,206,0.5)";
 		  } else if (j==3) {
-			this.ctx.strokeStyle = "##F1948A";
+			this.ctx.strokeStyle = "#16A085";
 			this.ctx.fillStyle = "rgba(22,160,133,0.5)";
+	      } else if (j==4) {
+			this.ctx.strokeStyle = "#F6035C";
+			this.ctx.fillStyle = "rgba(248,10,131,0.5)";
+	      } else if (j==5) {
+			this.ctx.strokeStyle = "#F8F60A";
+			this.ctx.fillStyle = "rgba(248,246,10,0.5)";
 	      }
 
 		  this.ctx.stroke();
@@ -1511,14 +1533,14 @@ class ImgPic extends Component {
 	this.isDirty = true
 	this.isDragPoly = true
 	this.reviveCanvas()
-	toast.success("  ۜ\(סּںסּَ` )/ۜ Page Refreshed!", { autoClose: 1500 })
+	toast.success("  ۜ\(סּںסּَ` )/ۜ Page Refreshed!", { autoClose: 2500 })
 	return Promise.resolve('Refresh Complete!');
 	//requestAnimationFrame(this.updateCanvas) 
   };
 
   undo = () => {
 	console.log('Undo!')
-	toast.success("  ۜ\(סּںסּَ` )/ۜ Undo Successful!", { autoClose: 1500 })
+	toast.success("  ۜ\(סּںסּَ` )/ۜ Undo Successful!", { autoClose: 2500 })
 	// Refresh the bbox array
 	this.props.undo()
 	// Update the canvas
