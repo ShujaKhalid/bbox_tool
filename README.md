@@ -107,11 +107,17 @@ Distributed under the MIT license. See ``LICENSE`` for more information.
 A lot of works remains to be done to refine the app and clean up the code.
 
 1.) Refine bounding box capturing mode (currently depracated)
+
 2.) Break the app into sub-modules
+
 3.) Remove legacy code
+
 4.) Fix bug in code that requires atleast 5 images to be added to start the project
+
 5.) Remove the limitation of only being able to edit files with a .jpg extension
+
 6.) Allow for a canvas that dynamically changes based on the users input image
+
 7.) Clean up the files in the code
 
 The application has been used in React and since this was my first time using React, the code is a bit rough around the edges. Please let me know if there are improvements that can be made (I am sure there are plenty).
