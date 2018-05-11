@@ -15,6 +15,8 @@ import {
 import styles from 'react-awesome-button/dist/styles.css';
 import 'react-awesome-button/dist/themes/theme-blue.css';
 import ReactTable from "react-table";
+import { ToastContainer, toast, cssTransition, style } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import 'react-table/react-table.css'
 
 // import data from './filenames.json';
@@ -30,7 +32,6 @@ const allKeys = (ctx => {
 	let keys = ctx.keys();
 	return keys
 })(require.context('./img_vid1/', true, /.jpg/));
-
 
 //---------------------------------------
 //The top level of the app starts here! -
@@ -104,8 +105,8 @@ class App extends Component {
 
   ///
   componentDidMount() {
-  	setInterval(this.serverCheck, 5000)
-  	setInterval(this.dbCheck, 5000)
+  	//setInterval(this.serverCheck, 5000)
+  	//setInterval(this.dbCheck, 5000)
   	this.tableUpdate('all')
   }
 
@@ -195,6 +196,7 @@ class App extends Component {
 							data: data,
 						})
 					}
+
 					return Promise.resolve('Hello');
 			  	}
 		  	).catch(
@@ -204,13 +206,14 @@ class App extends Component {
 		  	)
 		}
 
+		//toast("Table Updated. Refresh page to view modifications!", { autoClose: 5000 })
+
 	 } 
 
   } 
 
 
   frameUpdate = (key) => {
-  		console.log(this.props.ind)
 		let currKey = allKeys[key].substring(2)
      	var body = {pic: currKey}
 		var result = axios({
@@ -252,22 +255,27 @@ class App extends Component {
 				  }
 				}
 				
-				var classes = []
+				var classy = this.state.segClass
+				var classy_temp = []
 				// Extract class information here
 				for (let i=0; i<response.data[0].class.length; i++) {
 					if (response.data[0].class[i].length!=0) {
-						classes.push(response.data[0].class[i])
+						classy[i] = response.data[0].class[i]
+						classy_temp.push(response.data[0].class[i])
 					} else {
 						break;
 					}					
 				}
 
+				this.setState({
+					segClass: classy,
+				})
+
 				// Previously selected items from the drop down list are 
 				// selected
-				console.log(classes)
-				for (let i=0; i<classes.length; i++) {
+				for (let i=0; i<classy_temp.length; i++) {
 					var select = document.getElementById(i);
-					select[classes[i]].selected = true
+					select[classy_temp[i]].selected = true
 				}
 
 				// Update the canvas
@@ -515,11 +523,17 @@ class App extends Component {
 			// Switching to another image right away
 			if (flag) {
 			    // Stay on current image
-				this.setState({
-					ind: ind,
-					currImg: allFiles[ind],
-					currKey: allKeys[ind],
-				});
+				// Move to the net image if possible
+				if (this.state.ind+1<allFiles.length) {
+					this.setState({
+						ind: this.state.ind+1,
+						currImg: allFiles[this.state.ind+1],
+						currKey: allKeys[this.state.ind+1],
+					});
+					toast("Marching forward!", { autoClose: 3000 }) 
+				} else {
+					toast("Last Image Reached!", { autoClose: 3000 })
+				}
 			// Checking to see if some conditions are met (edge cases)
 			} else {
 				// Move to the net image if possible
@@ -528,9 +542,10 @@ class App extends Component {
 						ind: this.state.ind+1,
 						currImg: allFiles[this.state.ind+1],
 						currKey: allKeys[this.state.ind+1],
-					});  
+					});
+					toast("Marching forward!", { autoClose: 3000 }) 
 				} else {
-					window.alert('Last image reached!')
+					toast("Last Image Reached!", { autoClose: 3000 })
 				}
 			}
 		} else if (state=='prev') {
@@ -541,9 +556,10 @@ class App extends Component {
 					ind: this.state.ind-1,
 					currImg: allFiles[this.state.ind-1],
 					currKey: allKeys[this.state.ind-1],
-				});  
+				});
+				toast("Heading Back!", { autoClose: 3000 }) 
 			} else {
-				window.alert('First image reached!')
+				toast("First Image Reached!", { autoClose: 3000 })
 			}
 		} else if (state=='stay') {
 			// Stay on current image
@@ -553,9 +569,7 @@ class App extends Component {
 				currKey: allKeys[ind],
 			});
 		}
-
 	  return Promise.resolve('Hello');
-
   }
 
   checks = () => {
@@ -584,6 +598,7 @@ class App extends Component {
 		};
 
 		console.log('checks passed!')
+		//toast("All back-end checks passed!", { autoClose: 1000 })
 		return 'keepMoving'
   }
 
@@ -755,9 +770,11 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
+			      toast("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 3000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
-			        .then(() => {          
+			        .then(() => {  
+			          toast("Refresh page to view modifications...", { autoClose: 3000 }) 
 			          // 3. Switch to the next frame
 			          return this.switch(false, null, 'next')
 			            .then(() => {
@@ -774,15 +791,18 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
+   				  toast("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 3000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
-			        .then(() => {          
+			        .then(() => {    
+			          toast("Refresh page to view modifications...", { autoClose: 3000 })  
 			          // 3. Switch to the next frame
 			          return this.switch(false, null, 'prev')
 			            .then(() => {
 			              // 4. Refresh the page          
 			          	  return this.refresh()
 			          		.then(() => {
+
 			          		  // 5. Display the result on the canvas          
 			          		  return this.dispResult()
 			          		})
@@ -793,9 +813,11 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
+			      toast("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 3000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
-			        .then(() => {          
+			        .then(() => {
+			        toast("Refresh page to view modifications...", { autoClose: 3000 })     
 			          // 3. Switch to the next frame
 			          //return this.switch(false, null, 'stay')
 			            //.then(() => {
@@ -806,16 +828,16 @@ class App extends Component {
 			          		  return this.dispResult()
 			          		    .then(() => {
 			          		      // Run an alert
-							      confirmAlert({
-									title: ' ۜ\(סּںסּَ` )/ۜ',
-									message: 'The data has been written to the database! \n Refresh the page to update the table',
-									buttons: [
-										{
-										  label: 'Take me back to where the fun is',
-										  onClick: () => console.log('Going back...'),
-										}
-									]
-								  });
+							  //     confirmAlert({
+									// title: ' ۜ\(סּںסּَ` )/ۜ',
+									// message: 'The data has been written to the database! \n Refresh the page to update the table',
+									// buttons: [
+									// 	{
+									// 	  label: 'Take me back to where the fun is',
+									// 	  onClick: () => console.log('Going back...'),
+									// 	}
+									// ]
+								 //  });
 			          		    })
 			          		})
 			          	//})
@@ -969,6 +991,7 @@ class App extends Component {
 
 	return (
 	  <div className="App">
+	    <ToastContainer autoClose={8000} />
   	  	{this.state.serverState}
   	    {this.state.dbState}
 		<header style={{fontFamily: 'Roboto', fontSize: 32+'px'}}>
@@ -993,7 +1016,7 @@ class App extends Component {
 						// Refresh the bbox array
 						this.refresh()
 						this.frameUpdate(rowInfo.index)
-
+						toast("Displaying older annotations...", { autoClose: 5000 })
 						// if (handleOriginal) {
 				        //   handleOriginal();
 				        // }
@@ -1489,12 +1512,14 @@ class ImgPic extends Component {
 	this.isDirty = true
 	this.isDragPoly = true
 	this.reviveCanvas()
+	toast("  ۜ\(סּںסּَ` )/ۜ Page Refreshed!", { autoClose: 5000 })
 	return Promise.resolve('Refresh Complete!');
 	//requestAnimationFrame(this.updateCanvas) 
   };
 
   undo = () => {
 	console.log('Undo!')
+	toast("  ۜ\(סּںסּَ` )/ۜ Undo Successful!", { autoClose: 5000 })
 	// Refresh the bbox array
 	this.props.undo()
 	// Update the canvas

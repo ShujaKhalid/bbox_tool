@@ -22,6 +22,7 @@
     "react-native-awesome-button": "^1.8.2",
     "react-scripts": "1.1.1",
     "react-table": "^6.8.2",
+    "react-toastify": "^4.0.1",
     "typeface-roboto": "0.0.54",
     "webpack": "^3.11.0"
   },
