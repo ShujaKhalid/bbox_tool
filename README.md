@@ -79,8 +79,6 @@ Note: If at any time the annotations are not visible upon clicking a row in the 
 
 Note: The code as it currently stands has been structured for use with niche bio-medical data  
 
-11.) 
-
 ## Release History
 
 * 0.0.1
