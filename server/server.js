@@ -65,6 +65,11 @@ app.get('/checkexp', function(req, res) {
 })
 
 app.get('/checkdb', function(req, res) {
+	MongoClient.connect(url, function(err, db) {
+	  if (err) throw err;
+	  console.log("Database created!");
+	  db.close();
+	});
 	// console.log(res)
 	// console.log('------------------------------------------------------------------')
 	// console.log(res)
@@ -85,8 +90,8 @@ app.get('/checkdb', function(req, res) {
 		// Display the contents of the database
 	 	dbo.collection("imageData").find({}).toArray(function(err, result) {
 		    if (err) throw err;
-		    //console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-		    //console.log(result)
+		    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		    console.log(result)
 			db.close();
 		});
 
@@ -112,24 +117,49 @@ app.post('/writedb', function(req,res) {
 	  var data = req.body
 	  var dbo = db.db("SST");
 	  console.log(data)
+	  var myquery = { pic: data.pic };
+	  console.log(myquery)
 
-	  // Create the collection if it does not already exist
-	  dbo.createCollection("imageData", function(err, res) {
-	    if (err) throw err;
-	    // Insert the new image data into the database
-        dbo.collection("imageData").findAndModify(
-        	{pic: data.pic},
-        	[['_id','asc']],  // sort order
-       		{$set: data}, 
-        	{new: true}, 
-        	//{upsert: false}, 
-    		function(err, res) {
-		        if (err) throw err;
-		        console.log("1 document inserted");
-		        db.close();
-	    	});
+	  // Display the contents of the database
+	  dbo.collection("imageData").find(myquery).toArray(function(err, result) {
+		if (err) throw err;
+		  console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		  console.log(result)
 
-	    });
+	  	  if (result.length==0) {
+
+		  	  // Create the collection if it does not already exist
+			  dbo.createCollection("imageData", function(err, res) {
+			    if (err) throw err;
+			    // Insert the new image data into the database
+		        dbo.collection("imageData").insertOne(data, function(err, res) {
+				        if (err) throw err;
+				        console.log("New item inserted!");
+				        db.close();
+			    	});
+			  	});
+
+		  } else {
+
+		  	  // Create the collection if it does not already exist
+			  dbo.createCollection("imageData", function(err, res) {
+			    if (err) throw err;
+			    // Insert the new image data into the database
+		        dbo.collection("imageData").findAndModify(
+		        	{pic: data.pic},
+		        	[['_id','asc']],  // sort order
+		       		{$set: data}, 
+		        	{new: true}, 
+		        	{upsert: true}, 
+		    		function(err, res) {
+				        if (err) throw err;
+				        console.log("Old item updated!");
+				        db.close();
+			    	});
+			  	});
+		  }
+
+	  });
 
 	}); 
 
@@ -203,6 +233,7 @@ app.post('/send', function(req,res) {
 
     // Get sent data
 	data = req.body
+
 	// Push sent data to existing JSON object
 	text.push(data)
 	// data.forEach(function(v) {
