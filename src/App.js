@@ -362,7 +362,7 @@ class App extends Component {
 
 	// Assign the unique identifier here
 	const key = this.state.maskP[i].maskInd
-	console.log('key: '+key)
+	console.log('key: '+this.state.localKey)
 
 	// Set the state here to re-render the DOM
 	this.setState({
@@ -371,6 +371,8 @@ class App extends Component {
 	  controlledPosition: controlledPosition,
 	  maskInd: key,
 	  localKey: this.state.localKey+1,
+	}, () => {
+		console.log('New tracking key: '+this.state.localKey)
 	})
 
 	children.push(<Draggable key={key} defaultPosition={{x: this.state.deltaPosition[key].x, y:this.state.deltaPosition[key].y}} onDrag={this.handleDrag} {...dragHandlers}>
@@ -482,10 +484,10 @@ class App extends Component {
 		  })
 		}
 	  } else {
-		console.log('loclKey!=0')
+		console.log('localKey!=0')
 	  	if (this.state.localKey>-1) {
 	  	  this.setState({
-	  	  	localKey: this.state.defaultPosition[this.state.globalKey].length-2,
+	  	  	localKey: this.state.defaultPosition[this.state.globalKey].length-1,
 	  	  })
 	  	}
 	  }
