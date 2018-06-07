@@ -25,13 +25,13 @@ const allFiles = (ctx => {
 	let values = keys.map(ctx);
 	//return keys.reduce((o, k, i) => { o[k] = values[i]; return o; }, {});
 	return values
-})(require.context('./img_vid1/', true, /.jpg/));
+})(require.context('./../imgs/', true, /.jpg/));
 
 // Get key information
 const allKeys = (ctx => {
 	let keys = ctx.keys();
 	return keys
-})(require.context('./img_vid1/', true, /.jpg/));
+})(require.context('./../imgs/', true, /.jpg/));
 
 //---------------------------------------
 //The top level of the app starts here! -
@@ -105,8 +105,8 @@ class App extends Component {
 
   ///
   componentDidMount() {
-  	setInterval(this.serverCheck, 5000)
-  	setInterval(this.dbCheck, 5000)
+  	// setInterval(this.serverCheck, 5000)
+  	// setInterval(this.dbCheck, 5000)
   	this.tableUpdate('all')
   }
 
@@ -151,26 +151,54 @@ class App extends Component {
 							for (let i=0; i<=10; i++) {
 								if (response.data[0].class[i].length!=0) {
 									if (response.data[0].class[i]==1) {
-										classes.push(' Stapler');
+										classes.push(' Trocar');
 									} else if (response.data[0].class[i]==2) {
-										classes.push(' Needle');
+										classes.push(' Kelly Forceps');
 									} else if (response.data[0].class[i]==3) {
-										classes.push(' Suction');
-									} else if (response.data[0].class[i]==4) {
 										classes.push(' Nathanson Retractor');
+									} else if (response.data[0].class[i]==4) {
+										classes.push(' Marking Needle');
 									} else if (response.data[0].class[i]==5) {
-										classes.push(' Endo-Bag');
+										classes.push(' Bowel Grasper');
 									} else if (response.data[0].class[i]==6) {
-										classes.push(' Suture');
+										classes.push(' Ultrasonic Dissector');
 									} else if (response.data[0].class[i]==7) {
-										classes.push(' Tip');
+										classes.push(' Stapler');
 									} else if (response.data[0].class[i]==8) {
-										classes.push(' Shaft');
+										classes.push(' Clip Applier');
 									} else if (response.data[0].class[i]==9) {
-										classes.push(' Bougie');
+										classes.push(' Clip');
 									} else if (response.data[0].class[i]==10) {
+										classes.push(' Needle Driver');
+									} else if (response.data[0].class[i]==11) {
+										classes.push(' Scissors');
+									} else if (response.data[0].class[i]==12) {
+										classes.push(' Suture Needle');
+									} else if (response.data[0].class[i]==13) {
+										classes.push(' Maryland');
+									} else if (response.data[0].class[i]==14) {
+										classes.push(' Suction');
+									} else if (response.data[0].class[i]==15) {
+										classes.push(' Suture');
+									} else if (response.data[0].class[i]==16) {
+										classes.push(' Bougie');
+									} else if (response.data[0].class[i]==17) {
+										classes.push(' Endo-Close');
+									} else if (response.data[0].class[i]==18) {
+										classes.push(' Retractor');
+									} else if (response.data[0].class[i]==19) {
+										classes.push(' Advanced Bipolar');
+									} else if (response.data[0].class[i]==20) {
+										classes.push(' Endo-Bag');
+									} else if (response.data[0].class[i]==21) {
+										classes.push(' Monopolar');
+									} else if (response.data[0].class[i]==22) {
+										classes.push(' Veress Needle');
+									} else if (response.data[0].class[i]==23) {
+										classes.push(' N/A');
+									} else if (response.data[0].class[i]==24) {
 										classes.push(' Other');
-									}
+									} 
 								} else {
 									break;
 								}
@@ -225,70 +253,75 @@ class App extends Component {
 	  		response => {
 	  			var data = this.state.data
 
-	  			// Calculate the total no. of masks
-				if (response.data[0].mask[0].length!=0) {
-					var qty = 0
-					for (let i=0; i<10; i++) {
-						if (response.data[0].mask[i].length!=0) {
-							qty += 1; 
+	  			if (response.data[0] != undefined) {
+		  			// Calculate the total no. of masks
+					if (response.data[0].mask[0].length!=0) {
+						var qty = 0
+						for (let i=0; i<10; i++) {
+							if (response.data[0].mask[i].length!=0) {
+								qty += 1; 
+							} else {
+								break;
+							}
+							
+						}
+					}
+
+					// Extract mask information here
+					for (let j=0; j<qty; j++) {
+					  this.setState({
+					  	globalKey: j,
+					  })
+					  for (let i=0; i<response.data[0].mask[j].length; i++) {
+					  	this.setState({
+					  		localKey: i-1,
+					  	})
+						if (response.data[0].mask[j].length!=0) {
+							this.onMaskP(response.data[0].mask[j][i]);
 						} else {
 							break;
 						}
-						
+					  }
 					}
-				}
-
-				// Extract mask information here
-				for (let j=0; j<qty; j++) {
-				  this.setState({
-				  	globalKey: j,
-				  })
-				  for (let i=0; i<response.data[0].mask[j].length; i++) {
-				  	this.setState({
-				  		localKey: i-1,
-				  	})
-					if (response.data[0].mask[j].length!=0) {
-						this.onMaskP(response.data[0].mask[j][i]);
-					} else {
-						break;
+					
+					var classy = this.state.segClass
+					var classy_temp = []
+					// Extract class information here
+					for (let i=0; i<response.data[0].class.length; i++) {
+						if (response.data[0].class[i].length!=0) {
+							classy[i] = response.data[0].class[i]
+							classy_temp.push(response.data[0].class[i])
+						} else {
+							break;
+						}					
 					}
-				  }
-				}
-				
-				var classy = this.state.segClass
-				var classy_temp = []
-				// Extract class information here
-				for (let i=0; i<response.data[0].class.length; i++) {
-					if (response.data[0].class[i].length!=0) {
-						classy[i] = response.data[0].class[i]
-						classy_temp.push(response.data[0].class[i])
-					} else {
-						break;
-					}					
-				}
 
-				this.setState({
-					segClass: classy,
-				})
+					this.setState({
+						segClass: classy,
+					})
 
-				// Previously selected items from the drop down list are 
-				// selected
-				for (let i=0; i<classy_temp.length; i++) {
-					var select = document.getElementById(i);
-					select[classy_temp[i]].selected = true
+					// Previously selected items from the drop down list are 
+					// selected
+					for (let i=0; i<classy_temp.length; i++) {
+						var select = document.getElementById(i);
+						select[classy_temp[i]].selected = true
+					}
+
 				}
 
 				// Update the canvas
 				this.imgpic.reviveCanvas()
+				console.log('~~~ Canvas MODIFIED!')
 				//this.imgpic.reloadCanvas()
 
+			}
 
-			  	}
 		  	).catch(
 		  		error => {
 		  			console.log(error);
 		  		}
 		  	)
+		return Promise.resolve('Frame Updated!');
   }
 
 
@@ -474,11 +507,12 @@ class App extends Component {
 	// entered
 	//return this.save('next')
 
-	// Switch to the next image
-	this.switch(true, this.state.ind+1, 'next')
-	
-	// Refresh the bbox array
-	this.refresh()
+	/// Use promises
+	return this.switch(true, this.state.ind, 'next')
+    .then(() => {
+      // 2. Refresh the page
+      return this.refresh()
+    })
 	//this.frameUpdate(this.state.ind+1)
 
 	return Promise.resolve('Refresh Complete!')
@@ -503,11 +537,14 @@ class App extends Component {
 
   // prev
   prev = () => {
-  	// Switch to the next image
-	this.switch(true, this.state.ind-1, 'prev')
 	
-	// Refresh the bbox array
-	this.refresh()
+	/// Use promises
+  	// Switch to the next image
+	return this.switch(true, this.state.ind-1, 'prev')
+    .then(() => {
+      // 2. Refresh the page
+      return this.refresh()
+    })
 	//this.frameUpdate(this.state.ind-1)
 
     return Promise.resolve('Hello');
@@ -521,15 +558,19 @@ class App extends Component {
 		// 'Forward' or 'Back'?
 		if (state=='next') {
 			// Switching to another image right away
-			if (flag) {
+			if (flag==false) {
 			    // Stay on current image
 				// Move to the net image if possible
+				console.log(this.state.ind)
+				console.log(this.state.currImg)
+				console.log(this.state.currKey)
 				if (ind<allFiles.length) {
 					this.setState({
 						ind: ind,
 						currImg: allFiles[ind],
 						currKey: allKeys[ind],
 					});
+					console.log('~~~ currImg change state COMPLETE!')
 					toast.info("Marching forward!", { autoClose: 2500 }) 
 				} else {
 					toast.info("Last Image Reached!", { autoClose: 2500 })
@@ -542,6 +583,8 @@ class App extends Component {
 						ind: this.state.ind+1,
 						currImg: allFiles[this.state.ind+1],
 						currKey: allKeys[this.state.ind+1],
+					}, () => {
+						console.log(this.state.ind)
 					});
 					toast.info("Marching forward!", { autoClose: 2500 }) 
 				} else {
@@ -791,7 +834,7 @@ class App extends Component {
 			   // 1. Write to the database
 			   return this.dbWrite()
 			    .then(() => {
-   				  toast.sucess("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 2000 })
+   				  toast.success("  ۜ\(סּںסּَ` )/ۜ Changes Saved!", { autoClose: 2000 })
 			      // 2. Status of the file changed to marked
 			      return this.fileMarked()
 			        .then(() => {    
@@ -919,15 +962,29 @@ class App extends Component {
 			  <tr bgcolor={clr} height={hgt}>	
 				<select id={j} background="rgba(0,0,0,0.3)" className={j} onChange={this.classify}>
 				  <option value="0"> - </option>
-				  <option value="1"> Stapler </option>
-				  <option value="2"> Needle </option>
-				  <option value="3"> Suction </option>
-				  <option value="4"> Nathanson Retractor </option>
-				  <option value="5"> Endo-Bag </option>
-				  <option value="6"> Suture </option>
-				  <option value="7"> Tip </option>
-				  <option value="8"> Shaft </option>
-				  <option value="9"> Bougie </option>
+				  <option value="1"> Trocar </option>
+				  <option value="2"> Kelly Forceps </option>
+				  <option value="3"> Nathanson Retractor </option>
+				  <option value="5"> Marking Needle </option>
+				  <option value="6"> Bowel Grasper </option>
+				  <option value="7"> Ultrasonic Dissector </option>
+				  <option value="8"> Stapler </option>
+				  <option value="9"> Clip Applier </option>
+				  <option value="10"> Clip </option>
+				  <option value="10"> Needle Driver </option>
+				  <option value="10"> Scissors </option>
+				  <option value="10"> Suture Needle </option>
+				  <option value="10"> Maryland </option>
+				  <option value="10"> Suction </option>
+				  <option value="10"> Suture </option>
+				  <option value="10"> Bougie </option>
+				  <option value="10"> Endo-Close </option>
+				  <option value="10"> Retractor </option>
+				  <option value="10"> Advanced Bipolar </option>
+				  <option value="10"> Endo-Bag </option>
+				  <option value="10"> Monopolar </option>
+				  <option value="10"> Veress Needle </option>
+				  <option value="10"> N/A </option>
 				  <option value="10"> Other </option>
 				</select>
 			  </tr>
@@ -967,7 +1024,7 @@ class App extends Component {
 	  }, {
 	    Header: 'Status',
 	    accessor: 'status',
-	    //Cell: props => <span className='number'>{props.value}</span>,
+	    Cell: props => <span className='number'>{props.value}</span>,
 	    getProps: (state, rowInfo, column) => {
 	    		  return {
 				    style: {
@@ -1013,17 +1070,21 @@ class App extends Component {
 			getTdProps={(state, rowInfo, column, instance) => {
 				return {
 					onClick: (e, handleOriginal) => {
-
-						// Switch to the next image
-						this.switch(true, rowInfo.index, 'next')
 						
-						// Refresh the bbox array
-						this.refresh()
-						this.frameUpdate(rowInfo.index)
-						toast.warn("Displaying older annotations...", { autoClose: 2000 })
-						// if (handleOriginal) {
-				        //   handleOriginal();
-				        // }
+				  		/// Use promises
+						return this.switch(false, rowInfo.index, 'next')
+					    .then(() => {
+					      // 2. Refresh the page
+					      return this.refresh()
+					        .then(() => {    
+					          // 3. Update the next frame
+					          return this.frameUpdate(rowInfo.index)
+					            .then(() => {
+					              // 4. Refresh the page          
+					          	  toast.warn("Displaying older annotations (if any)...", { autoClose: 2000 })
+					          	})
+					        })
+					    })
 
 					 }
 				  }
@@ -1186,9 +1247,11 @@ class ImgPic extends Component {
   }
 
   reviveCanvas = () => {
+  	console.log('Inside revive canvas!') 
 	this.ctx.clearRect(0, 0, this.props.width, this.props.height)
 	this.base_image = new Image()
 	this.base_image.src = this.props.frame
+  	console.log(this.props.frame) 
 	this.base_image.onload = () => {
 	  this.ctx.drawImage(this.base_image,0,0)
 	  //console.log('Inside reload canvas!') 
@@ -1272,6 +1335,7 @@ class ImgPic extends Component {
 		  this.ctx.stroke();
 		  this.ctx.fill()
 		  this.ctx.closePath()
+
 	  }
   }
 
@@ -1495,9 +1559,9 @@ class ImgPic extends Component {
 								}
 							]
 						});
-					} else if (resVar==='mayDay') {
-						console.log('mayDay! mayDay!')
-					}
+					  } else if (resVar==='mayDay') {
+						  console.log('mayDay! mayDay!')
+					  }
 					  
 					  this.props.frameUpdate(this.props.ind)
 
