@@ -6,7 +6,7 @@ var util = require('util');
 var exec = util.promisify(require('child_process').exec);
 var mongo = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/SST";
+var url = "mongodb://mongo-server:27017/SST";
 
 app.use(bodyParser.json())
 app.use(express.static('public'))

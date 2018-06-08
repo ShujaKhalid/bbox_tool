@@ -105,8 +105,8 @@ class App extends Component {
 
   ///
   componentDidMount() {
-  	// setInterval(this.serverCheck, 5000)
-  	// setInterval(this.dbCheck, 5000)
+  	setInterval(this.serverCheck, 3000)
+  	setInterval(this.dbCheck, 3000)
   	this.tableUpdate('all')
   }
 
@@ -133,7 +133,7 @@ class App extends Component {
 					// --- Conditions for displaying data in the table ---
 					if (response.data.length != 0) {
 						// Complete is all of the requirements are met
-						if (response.data[0].mask[0].length!=0 && response.data[0].class[0].length!=0) {
+						if (response.data[0].mask[0].length!=0 && response.data[0].class[0].length!=0 && response.data[0].class[0]!='0') {
 							data[j].status = 'Complete! 😊'
 						} else {
 							data[j].status = 'In Progress... ⏰'

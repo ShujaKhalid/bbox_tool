@@ -1,0 +1,47 @@
+# mongo -> json-server -> repair -> seg-tool
+version: "2"
+services:
+  seg-tool:
+    container_name: seg-tool
+    #volumes:
+    #  - ./imgs:/src/imgs_vid1
+    # restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: seg-tool
+    ports:
+      - "5000:3000"
+    links:
+      - mongo
+      - json-server
+    # depends_on:
+    #   - mongo
+    #   - json-server
+      # - repair
+
+  json-server:
+    container_name: json-server
+    image: json-server
+    # restart: always
+    build: ./server
+    # ports:
+    #   - "3001:3001"
+    links:
+      - mongo
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    # volumes:
+    #   - ./data:/data/db
+    # ports:
+    #   - "27017:27017"
+
+  # repair:
+  #   container_name: repair
+  #   build: ./repair
+  #   volumes:
+  #     - ./backup:/server/backup
+  #   depends_on:
+  #     - "mongo" 

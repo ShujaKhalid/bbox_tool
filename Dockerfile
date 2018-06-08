@@ -9,7 +9,7 @@ ENV NPM_CONFIG_LOGLEVEL warn
 # Install and configure `serve`.
 RUN npm install -g serve
 CMD serve -s build
-EXPOSE 5000
+EXPOSE 3000
 
 # Install all dependencies of the current project.
 COPY package.json package.json
@@ -19,10 +19,8 @@ RUN npm install
 # Copy all local files into the image.
 COPY . .
 
-# Run the server
-EXPOSE 3001
-RUN node server/server.js &
+# Run the extract command
+#RUN node /server/extract.js
 
 # Build for production.
 RUN npm run build --production
-
