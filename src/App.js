@@ -967,27 +967,27 @@ class App extends Component {
 				  <option value="1"> Trocar </option>
 				  <option value="2"> Kelly Forceps </option>
 				  <option value="3"> Nathanson Retractor </option>
-				  <option value="5"> Marking Needle </option>
-				  <option value="6"> Bowel Grasper </option>
-				  <option value="7"> Ultrasonic Dissector </option>
-				  <option value="8"> Stapler </option>
-				  <option value="9"> Clip Applier </option>
-				  <option value="10"> Clip </option>
+				  <option value="4"> Marking Needle </option>
+				  <option value="5"> Bowel Grasper </option>
+				  <option value="6"> Ultrasonic Dissector </option>
+				  <option value="7"> Stapler </option>
+				  <option value="8"> Clip Applier </option>
+				  <option value="9"> Clip </option>
 				  <option value="10"> Needle Driver </option>
-				  <option value="10"> Scissors </option>
-				  <option value="10"> Suture Needle </option>
-				  <option value="10"> Maryland </option>
-				  <option value="10"> Suction </option>
-				  <option value="10"> Suture </option>
-				  <option value="10"> Bougie </option>
-				  <option value="10"> Endo-Close </option>
-				  <option value="10"> Retractor </option>
-				  <option value="10"> Advanced Bipolar </option>
-				  <option value="10"> Endo-Bag </option>
-				  <option value="10"> Monopolar </option>
-				  <option value="10"> Veress Needle </option>
-				  <option value="10"> N/A </option>
-				  <option value="10"> Other </option>
+				  <option value="11"> Scissors </option>
+				  <option value="12"> Suture Needle </option>
+				  <option value="13"> Maryland </option>
+				  <option value="14"> Suction </option>
+				  <option value="15"> Suture </option>
+				  <option value="16"> Bougie </option>
+				  <option value="17"> Endo-Close </option>
+				  <option value="18"> Retractor </option>
+				  <option value="19"> Advanced Bipolar </option>
+				  <option value="20"> Endo-Bag </option>
+				  <option value="21"> Monopolar </option>
+				  <option value="22"> Veress Needle </option>
+				  <option value="23"> N/A </option>
+				  <option value="24"> Other </option>
 				</select>
 			  </tr>
 			);

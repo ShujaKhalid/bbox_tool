@@ -7,6 +7,8 @@ var exec = util.promisify(require('child_process').exec);
 var mongo = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://mongo-server:27017/SST";
+var schedule = require("node-schedule");
+var rule = new schedule.RecurrenceRule();
 
 app.use(bodyParser.json())
 app.use(express.static('public'))
@@ -261,7 +263,48 @@ app.post('/send', function(req,res) {
 
 })
 
+extract = () => {
+	MongoClient.connect(url, function(err, db) {
+	  if (err) throw err;
+	  var dbo = db.db("SST");
+	  dbo.collection("imageData").find({}).toArray(function(err, result) {
+	    if (err) {
+	      //throw err;
+	      console.log('Can\'t connect to database...')
+	    }
+	    console.log(result.length);
+
+	    // Write the result to a database
+	    var filename = __dirname+'/backup/log_db_'+new Date().toISOString()+'.json'
+	  	console.log('Writing to: '+filename)
+	  	var wstream = fs.createWriteStream(filename, {flags: 'w'})
+	       .on('finish', function() {
+	          console.log("Write Finish.");
+	        })
+	       .on('error', function(err){
+	           console.log(err);
+	           console.log(err.stack);
+	        });
+
+	      wstream.write(JSON.stringify(result)); 
+	  	  wstream.end()
+
+	  	//db.close();
+
+	    });
+
+});
+}
+
 app.listen(3001, function() {
+
+	// Run a scheduler to save database contents every 5 minutes
+	rule.second = 5;
+	var jj = schedule.scheduleJob(rule, function() {
+		console.log('~~~Saving files:');
+		extract();
+	})
+
 	console.log('listening on port 3001')
 }) 
 

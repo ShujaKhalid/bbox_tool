@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#docker-compose up &
+
+# Load the files
+docker load -i seg-tool.tar.gz
+docker load -i json-server.tar.gz
+docker load -i mongo-server.tar.gz
+
+# Get the image id
+id1="$(docker images | grep seg-tool | awk '{print $3}')"
+id2="$(docker images | grep json-server | awk '{print $3}')"
+id3="$(docker images | grep mongo-server | awk '{print $3}')"
+
+# Tag the files
+docker tag $id1 seg-tool
+docker tag $id2 json-server
+docker tag $id3 mongo-server
+
+# Ready to go!

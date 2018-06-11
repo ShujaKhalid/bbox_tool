@@ -12,14 +12,12 @@ services:
     image: seg-tool
     ports:
       - "5000:3000"
-    depends_on:
-      - mongo-server
-      - json-server
+    # depends_on:
+    #   - mongo-server
+    #   - json-server
     links:
       - mongo-server
       - json-server
-    volumes:
-      - ./backup:/server/backup
 
   json-server:
     container_name: json-server
@@ -30,7 +28,9 @@ services:
       - "3001:3001"
     links:
       - mongo-server
-
+    volumes:
+      - ./backup:/usr/src/server/backup
+      
   # mongo:
   #   container_name: mongo
   #   image: mongo
